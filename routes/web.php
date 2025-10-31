@@ -38,3 +38,21 @@ Route::view('/ams-dashboard', 'ams.dashboard')->name('ams.dashboard');
 Route::get('/adminDashboard', function () {
     return view('adminDashboard');
 })->name('adminDashboard');
+
+//Route to Strathmore University Public Site
+Route::get('/publicSite', function () {
+    return view('public_site');
+})->name('publicSite.show');
+
+//Route to the Visit Us page
+Route::get('/visit', function () {
+    return view('visitUsPage');
+})->name('visit.show');
+
+//Route to handle the Visit Us form submission
+Route::post('/visit', function () {
+    // TODO: Implement form handling logic.
+    return redirect()->route('confirmation');
+})->name('visit.submit');
+
+
