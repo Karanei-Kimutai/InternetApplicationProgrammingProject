@@ -1,6 +1,3 @@
--- Drop the database if it already exists to start fresh.
-DROP DATABASE IF EXISTS university_external_db;
-
 -- Create the new database.
 CREATE DATABASE university_external_db;
 
@@ -22,8 +19,8 @@ CREATE TABLE `students` (
 -- Dumping data for table `students`
 --
 INSERT INTO `students` (`id`, `name`, `email`, `password`, `photo_url`) VALUES
-(130101, 'Asha Kimani', 'asha.kimani@university.ac.ke', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'https://randomuser.me/api/portraits/women/1.jpg'),
-(130102, 'Brian Omondi', 'brian.omondi@university.ac.ke', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'https://randomuser.me/api/portraits/men/2.jpg'),
+(183523, 'Karanei Kimutai', 'kimutai.karanei@strathmore.edu', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'https://randomuser.me/api/portraits/women/1.jpg'),
+(190004, 'Witness Mukundi', 'mukundi.chingwena@strathmore.edu', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'https://randomuser.me/api/portraits/men/2.jpg'),
 (130103, 'Fatima Yusuf', 'fatima.yusuf@university.ac.ke', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'https://randomuser.me/api/portraits/women/3.jpg'),
 (130104, 'David Kariuki', 'david.kariuki@university.ac.ke', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'https://randomuser.me/api/portraits/men/4.jpg'),
 (130105, 'Chloe Wangari', 'chloe.wangari@university.ac.ke', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'https://randomuser.me/api/portraits/women/5.jpg'),
