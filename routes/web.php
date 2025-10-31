@@ -25,8 +25,7 @@ Route::get('/adminLogin', function () {
 //Route to handle the Admin Login form submission
 Route::post('/adminLogin',function(){
     // TODO: Replace with real authentication.
-    // Placeholder: redirect back to admin login until an admin dashboard exists.
-    return redirect()->route('adminLogin');
+    return redirect()->route('adminDashboard');
 })->name('adminLogin.submit');
 
 // Simple confirmation page (shown after submitting an application)
@@ -34,3 +33,8 @@ Route::view('/confirmation', 'confirmation')->name('confirmation');
 
 // Dummy AMS dashboard (placeholder layout for university members)
 Route::view('/ams-dashboard', 'ams.dashboard')->name('ams.dashboard');
+
+//Admin Dashboard Route
+Route::get('/adminDashboard', function () {
+    return view('adminDashboard');
+})->name('adminDashboard');
