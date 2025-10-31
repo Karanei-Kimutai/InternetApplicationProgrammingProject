@@ -65,6 +65,18 @@
 
     <!-- Layout -->
     <div class="mx-auto max-w-7xl px-4 py-6 grid grid-cols-12 gap-6">
+        <!-- Search courses (dummy to mimic LMS) -->
+        <div class="col-span-12">
+            <div class="bg-white rounded-xl border shadow-sm p-4">
+                <form action="#" method="get" class="flex items-stretch gap-2">
+                    <label for="course-search" class="sr-only">Search courses</label>
+                    <input id="course-search" type="text" placeholder="Search courses" class="flex-1 rounded-md border-gray-300 focus:border-sublue-600 focus:ring-sublue-600" />
+                    <button type="submit" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-white" style="background-color:#0a3a8c">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"><path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 3.929 12.24l3.79 3.79a.75.75 0 1 0 1.06-1.06l-3.79-3.79A6.75 6.75 0 0 0 10.5 3.75Zm-5.25 6.75a5.25 5.25 0 1 1 10.5 0 5.25 5.25 0 0 1-10.5 0Z" clip-rule="evenodd"/></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
         <!-- Sidebar -->
         <aside class="col-span-12 md:col-span-3 lg:col-span-3">
             <nav class="bg-white rounded-xl shadow-sm border p-4">
@@ -199,7 +211,56 @@
                     </ul>
                 </div>
             </section>
+
+            <!-- Available courses (dummy thumbnails) -->
+            <section class="bg-white rounded-xl shadow-sm border p-6">
+                <h2 class="text-2xl font-bold" style="color:#b32428">Available courses</h2>
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    @for ($i = 0; $i < 8; $i++)
+                        <a href="#" class="block rounded-xl overflow-hidden border shadow-sm hover:shadow">
+                            <img src="https://placehold.co/249x200?text=Course+{{ $i+1 }}" alt="Course {{ $i+1 }}" class="w-full h-auto" />
+                            <div class="p-3 text-sm font-semibold text-sublue-600">Course {{ $i+1 }}</div>
+                        </a>
+                    @endfor
+                </div>
+            </section>
         </main>
     </div>
+    <!-- Footer (deep blue, three columns) -->
+    <footer class="mt-10 text-white" style="background-color:#0a3a8c">
+        <div class="mx-auto max-w-7xl px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <div class="flex items-center gap-3">
+                    <img src="https://placehold.co/80x80" alt="University Logo" class="h-16 w-16" />
+                    <span class="text-xl font-semibold">Strathmore University</span>
+                </div>
+                <p class="mt-4 text-sm text-white/90">Strathmore University is a leading University in the region, whose mission is to provide all‑round quality education in an atmosphere of freedom and responsibility; excellence in teaching, research, and scholarship; ethical and social development; and service to society. <a href="#" class="underline">Read More »</a></p>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold">Info</h2>
+                <ul class="mt-3 space-y-2 text-white/90">
+                    <li><a href="#" class="underline">Library</a></li>
+                    <li><a href="#" class="underline">Mail</a></li>
+                    <li><a href="#" class="underline">Digital Repository</a></li>
+                    <li><a href="#" class="underline">AMS Students' Module</a></li>
+                    <li><a href="#" class="underline">Sagana</a></li>
+                </ul>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold">Contact Us</h2>
+                <p class="mt-3 text-white/90 text-sm">Madaraka Estate Ole Sangale Road, PO Box 59857, 00200 City Square Nairobi, Kenya</p>
+                <p class="mt-2 text-white/90 text-sm">Phone: (+254) (0)703‑034000 (+254) (0)703‑034200 (+254) (0)703‑034300</p>
+                <p class="mt-1 text-white/90 text-sm">Email: <a href="mailto:systems@strathmore.edu" class="underline">systems@strathmore.edu</a></p>
+            </div>
+        </div>
+        <div class="bg-black/10">
+            <div class="mx-auto max-w-7xl px-4 py-3 text-center text-sm">Copyright © {{ now()->year }} - Strathmore University. All Rights Reserved.</div>
+        </div>
+    </footer>
+
+    <!-- Floating buttons -->
+    <a href="#top" class="fixed bottom-24 right-6 inline-flex items-center justify-center rounded-md text-white h-10 w-10 shadow" style="background-color:#0a3a8c" title="Back to top">▲</a>
+    <a href="#" class="fixed bottom-6 right-6 inline-flex items-center justify-center rounded-full h-11 w-11 text-white shadow" style="background-color:#b32428" title="Help">?</a>
+
 </body>
 </html>
