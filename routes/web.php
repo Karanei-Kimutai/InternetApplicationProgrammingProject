@@ -1,7 +1,9 @@
 <?php
 
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Route;
 
+//Homepage Route
 Route::get('/', function () {
     return view('systemLandingPage');
 });
