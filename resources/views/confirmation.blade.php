@@ -29,9 +29,8 @@
 
         <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <a href="{{ route('ams.dashboard') }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-3 text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">Go to AMS Dashboard</a>
-            <a href="{{ url('/') }}" class="inline-flex items-center justify-center rounded-md bg-gray-100 px-5 py-3 text-gray-900 font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300">Back to Home</a>
+            <a href="{{ route('ams.dashboard') }}" class="inline-flex items-center justify-center rounded-md bg-gray-100 px-5 py-3 text-gray-900 font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300">Back to Home</a>
         </div>
     </div>
 </body>
 </html>
-

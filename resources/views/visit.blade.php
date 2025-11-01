@@ -16,7 +16,7 @@
         <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
             <div>
                 <a href="/">
-                    <img src="/images/strathmore_logo_placeholder.png" alt="Strathmore University Logo" class="h-10">
+                    <img src="{{ asset('images/strathmore_logo.png') }}" alt="Strathmore University Logo" class="h-10">
                 </a>
             </div>
             <div class="flex items-center space-x-6">
@@ -31,7 +31,8 @@
     </header>
 
     <main class="container mx-auto max-w-lg mt-12 mb-12 p-8 bg-white rounded-lg shadow-md flex-grow">
-        <h1 class="text-2xl font-bold mb-6 text-center text-gray-700">Visitor Information Form</h1>
+        <h1 class="text-2xl font-bold text-center text-gray-700">Guest Pass Application</h1>
+        <p class="mt-2 mb-6 text-center text-sm text-gray-600">For visitors who need short-term access.</p>
 
         <form action="{{ route('visit.submit') }}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -65,11 +66,13 @@
                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
             </div>
 
-            <div>
+            <div class="space-y-3">
                 <button type="submit"
                         class="w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-md shadow-sm transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                     Submit Visitor Information
                 </button>
+                <a href="{{ route('publicSite.show') }}" class="block w-full text-center px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium rounded-md border transition">Go Back</a>
+                <p class="text-sm text-gray-600 text-center">Are you a university member? <a href="{{ route('universityMemberLogin') }}" class="text-blue-700 hover:underline">Apply as Member</a> instead.</p>
             </div>
         </form>
     </main>
