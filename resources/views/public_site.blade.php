@@ -26,7 +26,7 @@
         <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
             <div>
                 <a href="/">
-                    <img src="/images/strathmore_logo_placeholder.png" alt="Strathmore University Logo" class="h-10">
+                    <img src="{{ asset('images/strathmore_logo.png') }}" alt="Strathmore University Logo" class="h-10">
                 </a>
             </div>
             <div class="flex items-center space-x-6">
