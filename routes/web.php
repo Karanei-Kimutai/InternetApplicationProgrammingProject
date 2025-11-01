@@ -78,9 +78,7 @@ Route::get('/ams-dashboard', function (Request $request) {
 })->name('ams.dashboard');
 
 //Admin Dashboard Route
-Route::get('/adminDashboard', function () {
-    return view('adminDashboard');
-})->middleware('auth:web')->name('adminDashboard');
+Route::get('/adminDashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->middleware('auth:web')->name('adminDashboard');
 
 //Route to Strathmore University Public Site
 Route::get('/publicSite', function () {
@@ -130,3 +128,9 @@ Route::get('/apply-student', function () {
 Route::get('/apply-guest', function () {
     return redirect()->route('visit.show');
 })->name('apply.guest');
+
+// Approve a guest application
+Route::post('/admin/pass/{id}/approve', [App\Http\Controllers\AdminController::class, 'approvePass'])->name('admin.pass.approve');
+
+// Reject a guest application
+Route::post('/admin/pass/{id}/reject', [App\Http\Controllers\AdminController::class, 'rejectPass'])->name('admin.pass.reject');

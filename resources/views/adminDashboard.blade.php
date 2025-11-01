@@ -101,28 +101,87 @@
                 <!-- University Member applications Content -->
                 <div x-show="activeTab === 'university'" class="p-6 bg-white rounded-lg shadow">
                     <h2 class="text-lg font-medium text-gray-900">University Member Applications</h2>
-                    <p class="mt-2 text-sm text-gray-600">
-                        This area will display a table or list of university member applications.
-                    </p>
-                    <!-- TODO: Add application table here -->
+                    <table class="min-w-full mt-4">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2">Name</th>
+                                <th class="px-4 py-2">Email</th>
+                                <th class="px-4 py-2">Reason</th>
+                                <th class="px-4 py-2">Valid From</th>
+                                <th class="px-4 py-2">Valid Until</th>
+                                <th class="px-4 py-2">Status</th>
+                                <th class="px-4 py-2">Approved By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($universityApplications as $app)
+                                <tr>
+                                    <td class="border px-4 py-2">{{ $app->passable->name ?? '-' }}</td>
+                                    <td class="border px-4 py-2">{{ $app->passable->email ?? '-' }}</td>
+                                    <td class="border px-4 py-2">{{ $app->reason }}</td>
+                                    <td class="border px-4 py-2">{{ $app->valid_from ? $app->valid_from->format('Y-m-d H:i') : '-' }}</td>
+                                    <td class="border px-4 py-2">{{ $app->valid_until ? $app->valid_until->format('Y-m-d H:i') : '-' }}</td>
+                                    <td class="border px-4 py-2">{{ ucfirst($app->status) }}</td>
+                                    <td class="border px-4 py-2">{{ $app->approver->name ?? '-' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
 
                 <!-- Guest applications Content -->
                 <div x-show="activeTab === 'guest'" class="p-6 bg-white rounded-lg shadow">
                     <h2 class="text-lg font-medium text-gray-900">Guest Applications</h2>
-                    <p class="mt-2 text-sm text-gray-600">
-                        This area will display a table or list of guest applications.
-                    </to>
-                    <!-- TODO: Add application table here -->
+                    <table class="min-w-full mt-4">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2">Name</th>
+                                <th class="px-4 py-2">Email</th>
+                                <th class="px-4 py-2">Reason</th>
+                                <th class="px-4 py-2">Valid From</th>
+                                <th class="px-4 py-2">Valid Until</th>
+                                <th class="px-4 py-2">Status</th>
+                                <th class="px-4 py-2">Approved By</th>
+                                <th class="px-4 py-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($guestApplications as $app)
+                                <tr>
+                                    <td class="border px-4 py-2">{{ $app->passable->name ?? '-' }}</td>
+                                    <td class="border px-4 py-2">{{ $app->passable->email ?? '-' }}</td>
+                                    <td class="border px-4 py-2">{{ $app->reason }}</td>
+                                    <td class="border px-4 py-2">{{ $app->valid_from ? $app->valid_from->format('Y-m-d H:i') : '-' }}</td>
+                                    <td class="border px-4 py-2">{{ $app->valid_until ? $app->valid_until->format('Y-m-d H:i') : '-' }}</td>
+                                    <td class="border px-4 py-2">{{ ucfirst($app->status) }}</td>
+                                    <td class="border px-4 py-2">{{ $app->approver->name ?? '-' }}</td>
+                                    <td class="border px-4 py-2">
+                                        @if($app->status === 'pending')
+                                            <form method="POST" action="{{ route('admin.pass.approve', $app->id) }}" style="display:inline;">
+                                                @csrf
+                                                <button type="submit" class="bg-green-500 text-white px-2 py-1 rounded">Approve</button>
+                                            </form>
+                                            <form method="POST" action="{{ route('admin.pass.reject', $app->id) }}" style="display:inline;">
+                                                @csrf
+                                                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded">Reject</button>
+                                            </form>
+                                        @else
+                                            <span class="text-gray-500">No actions</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
 
                 <!-- Statistics Content -->
                 <div x-show="activeTab === 'statistics'" class="p-6 bg-white rounded-lg shadow">
                     <h2 class="text-lg font-medium text-gray-900">Statistics</h2>
-                    <p class="mt-2 text-sm text-gray-600">
-                        This area will display various charts and statistics.
-                    </p>
-                    <!-- TODO: Add charts here -->
+                    <ul class="mt-2 text-sm text-gray-600">
+                        <li>University Member Applications: {{ $statistics['university_count'] }}</li>
+                        <li>Guest Applications: {{ $statistics['guest_count'] }}</li>
+                    </ul>
                 </div>
             </div>
 
