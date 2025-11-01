@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\AdminController;
 
 // Homepage → University Member Login first
 Route::get('/', function () {
@@ -58,18 +59,15 @@ Route::match(['get','post'], '/logout', function () {
     session()->forget('member');
     return redirect()->route('universityMemberLogin');
 })->name('logout');
-//Route to the Admin login page
-Route::get('/adminLogin', function () {
-    return view('auth.adminLoginPage');
-})->name('adminLogin');
-//Route to handle the Admin Login form submission
-Route::post('/adminLogin',function(){
-    // TODO: Replace with real authentication.
-    return redirect()->route('adminDashboard');
-})->name('adminLogin.submit');
 
-// Simple confirmation page (shown after submitting an application)
-Route::view('/confirmation', 'confirmation')->name('confirmation');
+// Admin login form
+Route::get('/adminLogin', [AdminController::class, 'showLoginForm'])->name('adminLogin');
+
+// Handle admin login submission
+Route::post('/adminLogin', [AdminController::class, 'login'])->name('adminLogin.submit');
+
+// Admin logout
+Route::post('/adminLogout', [AdminController::class, 'logout'])->name('adminLogout');
 
 // AMS dashboard (require simple session login)
 Route::get('/ams-dashboard', function (Request $request) {
@@ -82,7 +80,7 @@ Route::get('/ams-dashboard', function (Request $request) {
 //Admin Dashboard Route
 Route::get('/adminDashboard', function () {
     return view('adminDashboard');
-})->name('adminDashboard');
+})->middleware('auth:web')->name('adminDashboard');
 
 //Route to Strathmore University Public Site
 Route::get('/publicSite', function () {
