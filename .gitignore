@@ -22,3 +22,5 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+# Windows streams metadata
+*Zone.Identifier
