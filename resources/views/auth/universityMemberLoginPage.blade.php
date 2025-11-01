@@ -21,8 +21,16 @@
 </head>
 <body class="bg-gray-100 font-sans antialiased">
 
+    <!-- Top brand bar with logo -->
+    <div class="w-full bg-white/90 backdrop-blur border-b">
+        <div class="mx-auto max-w-7xl px-4 py-3 flex items-center gap-3">
+            <img src="{{ asset('images/strathmore_logo.png') }}" alt="University Logo" class="h-8 w-auto object-contain" />
+            <span class="text-base sm:text-lg font-semibold text-gray-900">suLMS (Dummy)</span>
+        </div>
+    </div>
+
     <!-- Main container centered on the page -->
-    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="min-h-[calc(100vh-56px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full space-y-8">
             
             <!-- Login Card -->
@@ -49,12 +57,12 @@
                     @csrf
 
                     <div class="rounded-md shadow-sm -space-y-px">
-                        <!-- Username Field -->
+                        <!-- Login Field (email or ID) -->
                         <div>
-                            <label for="username" class="sr-only">Username</label>
-                            <input id="username" name="username" type="text" autocomplete="username" required
+                            <label for="login" class="sr-only">Email or Admission ID</label>
+                            <input id="login" name="login" type="text" autocomplete="username" required value="{{ old('login') }}"
                                 class="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                                placeholder="Username">
+                                placeholder="Email or Admission ID">
                         </div>
                         
                         <!-- Password Field -->
@@ -65,6 +73,10 @@
                                 placeholder="Password">
                         </div>
                     </div>
+
+                    @if (session('auth_error'))
+                        <p class="text-sm text-red-600">{{ session('auth_error') }}</p>
+                    @endif
 
                     <!-- Options (e.g., Forgot Password) -->
                     <div class="flex items-center justify-between">
@@ -100,4 +112,3 @@
 
 </body>
 </html>
-

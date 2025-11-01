@@ -1,23 +1,63 @@
 <?php
 
-use GuzzleHttp\Psr7\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
-//Homepage Route
+// Homepage → University Member Login first
 Route::get('/', function () {
-    return view('systemLandingPage');
+    return view('auth.universityMemberLoginPage');
 })->name('systemLandingPage');
 
-//Route to the University Member Login page
+// Route to the University Member Login page
 Route::get('/universityMemberLogin', function () {
     return view('auth.universityMemberLoginPage');
 })->name('universityMemberLogin');
-//Route to handle the University Member Login form submission
-Route::post('/universityMemberLogin',function(){
-    // TODO: Replace with real authentication.
-    // Redirect to system landing page after successful login.
-    return redirect()->route('systemLandingPage');
+// Handle the University Member Login form submission (external DB auth)
+Route::post('/universityMemberLogin', function (Request $request) {
+    $request->validate([
+        'login' => ['required','string'], // email or admission ID
+        'password' => ['required','string'],
+    ]);
+
+    $login = trim($request->input('login'));
+    $password = $request->input('password');
+
+    try {
+        $query = DB::connection('university')->table('v_university_members');
+        if (is_numeric($login)) {
+            $user = $query->where('id', (int) $login)->first();
+        } else {
+            $user = $query->where('email', $login)->first();
+        }
+
+        if ($user && Hash::check($password, $user->password)) {
+            session([
+                // Display name
+                'member' => $user->name,
+                // Username (admission number) for forms
+                'member_username' => (string) $user->id,
+                // Keep ID separately if needed elsewhere
+                'member_id' => $user->id,
+                'member_email' => $user->email,
+                'member_role' => $user->role ?? null,
+                'member_photo' => $user->photo_url ?? null,
+            ]);
+            return redirect()->route('ams.dashboard');
+        }
+
+        return back()->withInput(['login' => $login])->with('auth_error', 'Invalid credentials. Use your email or admission ID and password.');
+    } catch (\Throwable $e) {
+        return back()->withInput(['login' => $login])->with('auth_error', 'Authentication service unavailable. Please try again later.');
+    }
 })->name('universityMemberLogin.submit');
+
+// Logout for university member
+Route::match(['get','post'], '/logout', function () {
+    session()->forget('member');
+    return redirect()->route('universityMemberLogin');
+})->name('logout');
 //Route to the Admin login page
 Route::get('/adminLogin', function () {
     return view('auth.adminLoginPage');
@@ -31,8 +71,13 @@ Route::post('/adminLogin',function(){
 // Simple confirmation page (shown after submitting an application)
 Route::view('/confirmation', 'confirmation')->name('confirmation');
 
-// Dummy AMS dashboard (placeholder layout for university members)
-Route::view('/ams-dashboard', 'ams.dashboard')->name('ams.dashboard');
+// AMS dashboard (require simple session login)
+Route::get('/ams-dashboard', function (Request $request) {
+    if (!session()->has('member')) {
+        return redirect()->route('universityMemberLogin');
+    }
+    return view('ams.dashboard');
+})->name('ams.dashboard');
 
 //Admin Dashboard Route
 Route::get('/adminDashboard', function () {
@@ -56,15 +101,26 @@ Route::post('/visit', function () {
 })->name('visit.submit');
 
 
+// Guest pass now uses the public "Visit Us" page
 Route::get('/guest-form', function () {
-    return view('frontend.guest-form');
-});
+    return redirect()->route('visit.show');
+})->name('tpas.guest.apply');
 
 Route::get('/members-form', function () {
+    if (!session()->has('member')) {
+        return redirect()->route('universityMemberLogin');
+    }
     return view('frontend.members-form');
-});
+})->name('tpas.members.apply');
+
+// Submit member temporary pass form → confirmation
+Route::post('/members-form', function () {
+    return redirect()->route('confirmation');
+})->name('tpas.members.submit');
 
 // Route for AMS student modules: redirect to AMS dashboard
 Route::get('/ams-student-modules', function () {
     return redirect()->route('ams.dashboard');
 })->name('ams.student.modules');
+
+// (Removed) DB health check route used during setup.
