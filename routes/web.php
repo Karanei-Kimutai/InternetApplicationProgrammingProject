@@ -46,7 +46,7 @@ Route::get('/publicSite', function () {
 
 //Route to the Visit Us page
 Route::get('/visit', function () {
-    return view('visitUsPage');
+    return view('visit');
 })->name('visit.show');
 
 //Route to handle the Visit Us form submission
