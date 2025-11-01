@@ -24,7 +24,8 @@ INSERT INTO `students` (`id`, `name`, `email`, `password`, `photo_url`) VALUES
 (130103, 'Fatima Yusuf', 'fatima.yusuf@university.ac.ke', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'https://randomuser.me/api/portraits/women/3.jpg'),
 (130104, 'David Kariuki', 'david.kariuki@university.ac.ke', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'https://randomuser.me/api/portraits/men/4.jpg'),
 (130105, 'Chloe Wangari', 'chloe.wangari@university.ac.ke', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'https://randomuser.me/api/portraits/women/5.jpg'),
-(130106, 'Samuel Mwangi', 'samuel.mwangi@university.ac.ke', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'https://randomuser.me/api/portraits/men/6.jpg');
+(130106, 'Samuel Mwangi', 'samuel.mwangi@university.ac.ke', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'https://randomuser.me/api/portraits/men/6.jpg'),
+(189984, 'Alvin Murithi', 'alvin.muriuki@strathmore.edu', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'https://randomuser.me/api/portraits/men/18.jpg');
 
 --
 -- Table structure for table `lecturers`
@@ -71,4 +72,3 @@ SELECT
 FROM `lecturers`;
 
 COMMIT;
-
