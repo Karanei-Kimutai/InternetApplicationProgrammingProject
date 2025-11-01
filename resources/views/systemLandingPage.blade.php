@@ -38,16 +38,15 @@
 
     <!-- Top Navigation -->
     <nav class="w-full max-w-7xl px-4 py-3 bg-white dark:bg-gray-800 shadow-xl rounded-xl flex items-center mx-auto mb-10 border border-gray-200 dark:border-gray-700 sticky top-4 z-10">
-        <!-- Brand -->
-        <a href="{{ route('publicSite.show') }}" class="flex items-center gap-3">
-            <img src="{{ asset('images/strathmore_logo.png') }}" alt="Strathmore Logo" class="h-8 w-auto object-contain" />
-            <span class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Strathmore University</span>
-        </a>
+        <!-- Generic Brand (no institution-specific content) -->
+        <div class="flex items-center gap-3">
+            <span class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Temporary Pass Portal</span>
+        </div>
         <!-- Nav links -->
         <div class="ms-auto flex items-center gap-4">
             <a href="{{ route('publicSite.show') }}" class="text-gray-700 dark:text-gray-300 hover:text-brand-blue dark:hover:text-blue-400 font-medium">Home</a>
-            <a href="{{ route('visit.show') }}" class="text-gray-700 dark:text-gray-300 hover:text-brand-blue dark:hover:text-blue-400 font-medium">Visit Us</a>
-            <a href="{{ route('universityMemberLogin') }}" class="text-gray-700 dark:text-gray-300 hover:text-brand-blue dark:hover:text-blue-400 font-medium">Student Login</a>
+            <a href="{{ route('visit.show') }}" class="text-gray-700 dark:text-gray-300 hover:text-brand-blue dark:hover:text-blue-400 font-medium">Visitor Access</a>
+            <a href="{{ route('universityMemberLogin') }}" class="text-gray-700 dark:text-gray-300 hover:text-brand-blue dark:hover:text-blue-400 font-medium">Member Login</a>
             <button title="Toggle theme" onclick="document.documentElement.classList.toggle('dark')" class="p-2 rounded-full text-gray-800 dark:text-white bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 shadow-sm transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
             </button>
@@ -75,22 +74,7 @@
                 </div>
             </section>
 
-            <!-- Features -->
-            <section class="w-full mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-white dark:bg-dark-bg rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-                    <h3 class="font-semibold text-gray-900 dark:text-white">Secure</h3>
-                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Authentication against the University AMS to keep your data safe.</p>
-                </div>
-                <div class="bg-white dark:bg-dark-bg rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-                    <h3 class="font-semibold text-gray-900 dark:text-white">Fast</h3>
-                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Simple forms for members and guests to get you through quickly.</p>
-                </div>
-                <div class="bg-white dark:bg-dark-bg rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-                    <h3 class="font-semibold text-gray-900 dark:text-white">Support</h3>
-                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Need help? Visit the public site or contact systems@strathmore.edu.</p>
-                </div>
-            </section>
-
+            <!-- Subtext -->
             <p class="mt-8 text-sm text-gray-500 dark:text-gray-400 text-center">Choose an option above to start your application.</p>
         </main>
     </div>
