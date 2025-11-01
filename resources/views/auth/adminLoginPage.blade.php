@@ -49,12 +49,12 @@
                     @csrf
 
                     <div class="rounded-md shadow-sm -space-y-px">
-                        <!-- Username Field -->
+                        <!-- Email Field -->
                         <div>
-                            <label for="username" class="sr-only">Username</label>
-                            <input id="username" name="username" type="text" autocomplete="username" required
+                            <label for="email" class="sr-only">Email Address</label>
+                            <input id="emailAddress" name="email" type="email" autocomplete="username" required
                                 class="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm"
-                                placeholder="Admin Username">
+                                placeholder="Admin Email Address">
                         </div>
                         
                         <!-- 
