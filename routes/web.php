@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 //Homepage Route
 Route::get('/', function () {
     return view('systemLandingPage');
-});
+})->name('systemLandingPage');
 
 //Route to the University Member Login page
 Route::get('/universityMemberLogin', function () {
@@ -15,8 +15,8 @@ Route::get('/universityMemberLogin', function () {
 //Route to handle the University Member Login form submission
 Route::post('/universityMemberLogin',function(){
     // TODO: Replace with real authentication.
-    // For now, redirect to the dummy AMS dashboard after a successful "login".
-    return redirect()->route('ams.dashboard');
+    // Redirect to system landing page after successful login.
+    return redirect()->route('systemLandingPage');
 })->name('universityMemberLogin.submit');
 //Route to the Admin login page
 Route::get('/adminLogin', function () {
@@ -63,3 +63,8 @@ Route::get('/guest-form', function () {
 Route::get('/members-form', function () {
     return view('frontend.members-form');
 });
+
+// Route for AMS student modules: redirect to AMS dashboard
+Route::get('/ams-student-modules', function () {
+    return redirect()->route('ams.dashboard');
+})->name('ams.student.modules');

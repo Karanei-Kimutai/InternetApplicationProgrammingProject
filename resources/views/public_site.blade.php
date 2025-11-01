@@ -86,15 +86,17 @@
     </main>
 
     <footer class="bg-gray-800 text-gray-300 mt-20 py-12">
-        <div class="container mx-auto px-6 text-center">
-            <p>&copy; {{ date('Y') }} Strathmore University. All rights reserved.</p>
-            <div class="mt-4 space-x-6">
-                <a href="#" class="hover:text-white text-sm">Privacy Policy</a>
-                <a href="#" class="hover:text-white text-sm">Contact Us</a>
-                <a href="#" class="hover:text-white text-sm">Media</a>
-            </div>
+    <div class="container mx-auto px-6 text-center">
+        <p>&copy; {{ date('Y') }} Strathmore University. All rights reserved.</p>
+        <div class="mt-4 space-x-6">
+            <a href="#" class="hover:text-white text-sm">Privacy Policy</a>
+            <a href="#" class="hover:text-white text-sm">Contact Us</a>
+            <a href="#" class="hover:text-white text-sm">Media</a>
+            <a href="{{ route('ams.dashboard') }}" class="hover:text-white text-sm">AMS students' module</a>
+            <a href="{{ route('universityMemberLogin') }}" class="hover:text-white text-sm">University Member Login</a>
         </div>
-    </footer>
+    </div>
+</footer>
 
 </body>
 </html>
