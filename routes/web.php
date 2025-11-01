@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Hash;
 
 // Homepage → University Member Login first
 Route::get('/', function () {
-    return view('auth.universityMemberLoginPage');
+    return view('systemLandingPage');
 })->name('systemLandingPage');
 
 // Route to the University Member Login page
