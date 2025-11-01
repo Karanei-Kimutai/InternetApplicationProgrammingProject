@@ -56,3 +56,10 @@ Route::post('/visit', function () {
 })->name('visit.submit');
 
 
+Route::get('/guest-form', function () {
+    return view('frontend.guest-form');
+});
+
+Route::get('/members-form', function () {
+    return view('frontend.members-form');
+});
