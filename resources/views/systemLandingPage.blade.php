@@ -72,7 +72,7 @@
 
                 <!-- Button for University Member -->
                 <a
-                    href="/login"
+                    href="{{ route('apply.student') }}"
                     class="flex-1 text-center px-6 py-4 border-2 border-brand-blue bg-brand-blue text-white hover:bg-brand-blue/90 hover:border-brand-blue/90 dark:border-blue-400 dark:bg-blue-400 dark:text-gray-900 dark:hover:bg-blue-500 dark:hover:border-blue-500 rounded-lg font-semibold text-lg leading-snug transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.01]"
                 >
                     Apply as University Member
@@ -80,7 +80,7 @@
 
                 <!-- Button for Guest (Styled as secondary) -->
                 <a
-                    href="/guest-application" 
+                    href="{{ route('apply.guest') }}" 
                     class="flex-1 text-center px-6 py-4 border-2 border-brand-green text-brand-green bg-white hover:bg-brand-green/10 dark:border-green-400 dark:text-green-400 dark:bg-dark-bg dark:hover:bg-green-400/10 rounded-lg font-semibold text-lg leading-snug transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.01]"
                 >
                     Apply as Guest

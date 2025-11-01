@@ -68,3 +68,13 @@ Route::get('/members-form', function () {
 Route::get('/ams-student-modules', function () {
     return redirect()->route('ams.dashboard');
 })->name('ams.student.modules');
+
+// Route for 'Apply as Student' button
+Route::get('/apply-student', function () {
+    return redirect()->route('universityMemberLogin');
+})->name('apply.student');
+
+// Route for 'Apply as Guest' button
+Route::get('/apply-guest', function () {
+    return redirect()->route('visit.show');
+})->name('apply.guest');
