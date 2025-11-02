@@ -38,15 +38,20 @@
                         <h1 class="text-xl font-bold text-gray-900">Admin Dashboard</h1>
                     </div>
                     
-                    <!-- Logout Link (Placeholder) -->
+                    <!-- Quick tools + Logout -->
                     <div class="flex items-center">
-                        <!-- 
-                            We'll need a proper logout route later.
-                            This could be a form that posts to a logout route.
-                        -->
-                        <a href="{{ route('universityMemberLogin') }}" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-                            Log out
-                        </a>
+                        <form action="{{ route('admin.member.reset') }}" method="POST" class="hidden md:flex items-center gap-2 me-6">
+                            @csrf
+                            <label for="member_id" class="text-sm text-gray-600">Reset member limit:</label>
+                            <input type="number" min="1" step="1" name="member_id" id="member_id" placeholder="Admission #"
+                                   class="w-36 px-2 py-1 border rounded-md text-sm" />
+                            <button type="submit" class="px-3 py-1.5 rounded-md bg-amber-500 text-white text-sm hover:bg-amber-600">Reset</button>
+                        </form>
+
+                        <form action="{{ route('adminLogout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="text-sm font-medium text-gray-500 hover:text-gray-700">Log out</button>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -71,6 +71,9 @@ Route::post('/adminLogin', [AdminController::class, 'login'])->name('adminLogin.
 // Admin logout
 Route::post('/adminLogout', [AdminController::class, 'logout'])->name('adminLogout');
 
+// Confirmation page (shared)
+Route::view('/confirmation', 'confirmation')->name('confirmation');
+
 // AMS dashboard (require simple session login)
 Route::get('/ams-dashboard', function (Request $request) {
     if (!session()->has('member')) {
@@ -131,6 +134,11 @@ Route::post('/admin/pass/{id}/approve', [App\Http\Controllers\AdminController::c
 
 // Reject a guest application
 Route::post('/admin/pass/{id}/reject', [App\Http\Controllers\AdminController::class, 'rejectPass'])->name('admin.pass.reject');
+
+// Admin: reset a member's 30‑day rate limit (local/testing convenience)
+Route::post('/admin/member/reset', [AdminController::class, 'resetMemberRateLimit'])
+    ->middleware('auth:web')
+    ->name('admin.member.reset');
 
 // QR code preview (PNG) by token
 Route::get('/tpas/qr/{token}', function (string $token) {

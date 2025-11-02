@@ -12,6 +12,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Redirect;
 
 class AdminController extends Controller
 {
@@ -133,5 +134,26 @@ class AdminController extends Controller
         $passable = $pass->passable;
 
         return $passable?->email ?? null;
+    }
+
+    /**
+     * Reset a member's 30‑day rate limit by marking recent passes as rejected.
+     * Intended for testing/local use only.
+     */
+    public function resetMemberRateLimit(Request $request)
+    {
+        $data = $request->validate([
+            'member_id' => ['required','integer','min:1'],
+        ]);
+
+        $memberId = (int) $data['member_id'];
+
+        $affected = TemporaryPass::where('passable_type', UniversityMember::class)
+            ->where('passable_id', $memberId)
+            ->where('created_at', '>=', now()->subDays(30))
+            ->update(['status' => 'rejected']);
+
+        return Redirect::route('adminDashboard')
+            ->with('success', "Rate limit reset for member {$memberId}. Updated {$affected} record(s).");
     }
 }
