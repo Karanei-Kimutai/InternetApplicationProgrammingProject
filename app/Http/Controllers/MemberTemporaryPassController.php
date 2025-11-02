@@ -59,6 +59,11 @@ class MemberTemporaryPassController extends Controller
             'valid_until' => $validUntil,
         ]);
 
+        // Generate and persist QR code image for the approved pass
+        $temporaryPass->generateQrCodeImage(
+            payload: route('tpas.qr.verify', ['token' => $temporaryPass->qr_code_token])
+        );
+
         $temporaryPass->logEmail(
             $memberEmail,
             'Temporary Pass Approved',

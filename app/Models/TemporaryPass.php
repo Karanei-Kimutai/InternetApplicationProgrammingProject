@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class TemporaryPass extends Model
 {
@@ -29,6 +30,7 @@ class TemporaryPass extends Model
         'status',
         'reason',
         'qr_code_token',
+        'qr_code_path',
         'valid_from',
         'valid_until',
         'approved_by',
@@ -109,5 +111,42 @@ class TemporaryPass extends Model
     public static function reasonLabels(): array
     {
         return self::MEMBER_REASON_LABELS;
+    }
+
+    /**
+     * Generate and persist a QR code image for this pass using the token.
+     * Stores the PNG under the public disk at qrcodes/<token>.png and
+     * updates the `qr_code_path` attribute.
+     *
+     * Returns the relative storage path (within public disk).
+     */
+    public function generateQrCodeImage(?string $payload = null, int $size = 512): string
+    {
+        if (!$this->qr_code_token) {
+            // Ensure a token exists to uniquely identify this pass
+            $this->qr_code_token = (string) str()->uuid();
+        }
+
+        $payload ??= $this->qr_code_token;
+        $path = 'qrcodes/' . $this->qr_code_token . '.png';
+
+        // Defer to simple-qrcode if available; otherwise write a placeholder
+        if (class_exists(\SimpleSoftwareIO\QrCode\Facades\QrCode::class)) {
+            $png = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')
+                ->size($size)
+                ->margin(1)
+                ->errorCorrection('M')
+                ->generate($payload);
+            Storage::disk('public')->put($path, $png);
+        } else {
+            // Minimal placeholder image indicating missing QR dependency
+            $placeholder = base64_decode('iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAALUlEQVRYR+3PMQEAAAgDINc/9C0YgYy0n0hQFQAAAAAAAAAAAAAAAAAAAAAAwEwG3p3G9r7dAAAAAElFTkSuQmCC');
+            Storage::disk('public')->put($path, $placeholder);
+        }
+
+        $this->qr_code_path = $path;
+        $this->save();
+
+        return $path;
     }
 }

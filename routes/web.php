@@ -131,3 +131,28 @@ Route::post('/admin/pass/{id}/approve', [App\Http\Controllers\AdminController::c
 
 // Reject a guest application
 Route::post('/admin/pass/{id}/reject', [App\Http\Controllers\AdminController::class, 'rejectPass'])->name('admin.pass.reject');
+
+// QR code preview (PNG) by token
+Route::get('/tpas/qr/{token}', function (string $token) {
+    $pass = \App\Models\TemporaryPass::where('qr_code_token', $token)->firstOrFail();
+    if (!$pass->qr_code_path) {
+        $pass->generateQrCodeImage(payload: route('tpas.qr.verify', ['token' => $token]));
+    }
+    $path = storage_path('app/public/' . $pass->qr_code_path);
+    abort_unless(is_file($path), 404);
+    return response()->file($path, [
+        'Content-Type' => 'image/png',
+        'Cache-Control' => 'public, max-age=604800',
+    ]);
+})->name('tpas.qr.show');
+
+// QR verification endpoint (JSON payload for now)
+Route::get('/tpas/verify/{token}', function (string $token) {
+    $pass = \App\Models\TemporaryPass::where('qr_code_token', $token)->firstOrFail();
+    return response()->json([
+        'token' => $token,
+        'status' => $pass->status,
+        'valid_from' => optional($pass->valid_from)->toIso8601String(),
+        'valid_until' => optional($pass->valid_until)->toIso8601String(),
+    ]);
+})->name('tpas.qr.verify');
