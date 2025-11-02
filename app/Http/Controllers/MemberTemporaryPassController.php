@@ -64,6 +64,9 @@ class MemberTemporaryPassController extends Controller
             payload: route('tpas.qr.verify', ['token' => $temporaryPass->qr_code_token])
         );
 
+        $qrShow = route('tpas.qr.show', ['token' => $temporaryPass->qr_code_token]);
+        $qrVerify = route('tpas.qr.verify', ['token' => $temporaryPass->qr_code_token]);
+
         $temporaryPass->logEmail(
             $memberEmail,
             'Temporary Pass Approved',
@@ -71,7 +74,10 @@ class MemberTemporaryPassController extends Controller
         );
 
         return redirect()->route('tpas.members.apply')
-            ->with('status', 'Temporary pass issued. Check your email for the QR code and validity details.');
+            ->with('status', 'Temporary pass issued. QR code generated successfully.')
+            ->with('qr_url', $qrShow)
+            ->with('verify_url', $qrVerify)
+            ->with('qr_token', $temporaryPass->qr_code_token);
     }
 
     /**
