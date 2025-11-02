@@ -4,22 +4,7 @@
 
   @php($reasonOptions = \App\Models\TemporaryPass::MEMBER_REASON_LABELS)
 
-  <!-- Success banner for recently issued pass -->
-  @if (session('status'))
-    <div class="max-w-2xl mx-auto mt-8 rounded-md border border-green-200 bg-green-50 text-green-900 px-4 py-3">
-      <p class="font-medium">{{ session('status') }}</p>
-      @if (session('qr_url'))
-        <p class="mt-2 text-sm">
-          - View QR: <a class="underline hover:opacity-80" href="{{ session('qr_url') }}" target="_blank" rel="noopener">Open image</a>
-          @if (session('verify_url'))
-            • Verify JSON: <a class="underline hover:opacity-80" href="{{ session('verify_url') }}" target="_blank" rel="noopener">{{ session('verify_url') }}</a>
-          @endif
-        </p>
-      @endif
-    </div>
-  @endif
-
-  <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl mt-6 border overflow-hidden">
+  <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl mt-12 border overflow-hidden">
 
     <!-- Header -->
     <div class="px-8 pt-8 pb-4 flex items-start gap-4">

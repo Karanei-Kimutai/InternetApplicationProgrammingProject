@@ -25,7 +25,47 @@
             </svg>
         </div>
         <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Your application has been received</h1>
-        <p class="mt-3 text-gray-600">We’re processing it now. You’ll be notified once a decision is made.</p>
+        @if (session('status'))
+            <p class="mt-3 text-gray-700">{{ session('status') }}</p>
+        @else
+            <p class="mt-3 text-gray-600">We’re processing it now. You’ll be notified once a decision is made.</p>
+        @endif
+
+        <!-- Validity and issuance policy note (shown once here) -->
+        <div class="mt-4 rounded-md border border-amber-200 bg-amber-50 text-amber-900 px-4 py-3 text-sm text-left">
+            <p>
+                Lost ID passes last 7 days; all other passes last 1 day. Lost/Misplaced ID requests are limited to one every 30 days.
+            </p>
+        </div>
+
+        @if (session('qr_url'))
+            <div class="mt-6 text-left">
+                <h2 class="text-lg font-semibold text-gray-900">Your QR Code</h2>
+                <p class="text-sm text-gray-600 mt-1">Use this QR code at the gate. Keep it safe and do not share.</p>
+                <div class="mt-3 flex items-center gap-3">
+                    <a href="{{ session('qr_url') }}" target="_blank" rel="noopener"
+                       class="inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-3 text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        View QR Image
+                    </a>
+                    @if (session('verify_url'))
+                        <a href="{{ session('verify_url') }}" target="_blank" rel="noopener"
+                           class="inline-flex items-center justify-center rounded-md bg-gray-100 px-5 py-3 text-gray-900 font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                            Verify JSON
+                        </a>
+                    @endif
+                </div>
+                @if (session('valid_from') || session('valid_until'))
+                    <p class="mt-3 text-xs text-gray-500">
+                        @if (session('valid_from'))
+                            Valid from: {{ session('valid_from') }}
+                        @endif
+                        @if (session('valid_until'))
+                            • Valid until: {{ session('valid_until') }}
+                        @endif
+                    </p>
+                @endif
+            </div>
+        @endif
 
         <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <a href="{{ route('ams.dashboard') }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-3 text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">Go to AMS Dashboard</a>

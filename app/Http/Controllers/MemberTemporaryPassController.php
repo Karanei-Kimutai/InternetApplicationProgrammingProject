@@ -73,11 +73,13 @@ class MemberTemporaryPassController extends Controller
             'sent'
         );
 
-        return redirect()->route('tpas.members.apply')
+        return redirect()->route('confirmation')
             ->with('status', 'Temporary pass issued. QR code generated successfully.')
             ->with('qr_url', $qrShow)
             ->with('verify_url', $qrVerify)
-            ->with('qr_token', $temporaryPass->qr_code_token);
+            ->with('qr_token', $temporaryPass->qr_code_token)
+            ->with('valid_from', optional($temporaryPass->valid_from)->toIso8601String())
+            ->with('valid_until', optional($temporaryPass->valid_until)->toIso8601String());
     }
 
     /**
