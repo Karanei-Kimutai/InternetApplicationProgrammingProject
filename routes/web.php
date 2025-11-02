@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\GuestTemporaryPassController;
+use App\Http\Controllers\MemberTemporaryPassController;
 
 // Homepage → University Member Login first
 Route::get('/', function () {
@@ -91,10 +93,7 @@ Route::get('/visit', function () {
 })->name('visit.show');
 
 //Route to handle the Visit Us form submission
-Route::post('/visit', function () {
-    // TODO: Implement form handling logic.
-    return redirect()->route('confirmation');
-})->name('visit.submit');
+Route::post('/visit', [GuestTemporaryPassController::class, 'store'])->name('visit.submit');
 
 
 // Guest pass now uses the public "Visit Us" page
@@ -109,10 +108,8 @@ Route::get('/members-form', function () {
     return view('frontend.members-form');
 })->name('tpas.members.apply');
 
-// Submit member temporary pass form → confirmation
-Route::post('/members-form', function () {
-    return redirect()->route('confirmation');
-})->name('tpas.members.submit');
+// Submit member temporary pass form
+Route::post('/members-form', [MemberTemporaryPassController::class, 'store'])->name('tpas.members.submit');
 
 // Route for AMS student modules: redirect to AMS dashboard
 Route::get('/ams-student-modules', function () {

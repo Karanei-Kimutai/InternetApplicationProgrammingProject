@@ -5,8 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreAdminRequest;
 use App\Http\Requests\UpdateAdminRequest;
 use App\Models\Admin;
+use App\Models\Guest;
+use App\Models\TemporaryPass;
+use App\Models\UniversityMember;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
@@ -53,15 +58,15 @@ class AdminController extends Controller
     // Dashboard method
     public function dashboard()
     {
-        $universityApplications = \App\Models\TemporaryPass::where('passable_type', 'App\\Models\\UniversityMember')
+        $universityApplications = TemporaryPass::where('passable_type', UniversityMember::class)
             ->latest()->take(10)->get();
 
-        $guestApplications = \App\Models\TemporaryPass::where('passable_type', 'App\\Models\\Guest')
+        $guestApplications = TemporaryPass::where('passable_type', Guest::class)
             ->latest()->take(10)->get();
 
         $statistics = [
-            'university_count' => \App\Models\TemporaryPass::where('passable_type', 'App\\Models\\UniversityMember')->count(),
-            'guest_count' => \App\Models\TemporaryPass::where('passable_type', 'App\\Models\\Guest')->count(),
+            'university_count' => TemporaryPass::where('passable_type', UniversityMember::class)->count(),
+            'guest_count' => TemporaryPass::where('passable_type', Guest::class)->count(),
         ];
 
         return view('adminDashboard', compact('universityApplications', 'guestApplications', 'statistics'));
@@ -70,19 +75,63 @@ class AdminController extends Controller
     // Approve/Reject actions
     public function approvePass($id)
     {
-        $pass = \App\Models\TemporaryPass::findOrFail($id);
+        $pass = TemporaryPass::findOrFail($id);
+        $now = CarbonImmutable::now();
+
         $pass->status = 'approved';
         $pass->approved_by = Auth::id();
+        $pass->valid_from = $now;
+        $pass->valid_until = $this->determineExpiry($pass, $now);
+
+        if (!$pass->qr_code_token) {
+            $pass->qr_code_token = Str::uuid()->toString();
+        }
+
         $pass->save();
+
+        if ($recipient = $this->resolveRecipientEmail($pass)) {
+            $pass->logEmail($recipient, 'Temporary Pass Approved', 'sent');
+        }
+
         return redirect()->route('adminDashboard')->with('success', 'Pass approved.');
     }
 
     public function rejectPass($id)
     {
-        $pass = \App\Models\TemporaryPass::findOrFail($id);
+        $pass = TemporaryPass::findOrFail($id);
         $pass->status = 'rejected';
         $pass->approved_by = Auth::id();
+        $pass->valid_from = null;
+        $pass->valid_until = null;
+        $pass->qr_code_token = null;
         $pass->save();
+
+        if ($recipient = $this->resolveRecipientEmail($pass)) {
+            $pass->logEmail($recipient, 'Temporary Pass Application Rejected', 'sent');
+        }
+
         return redirect()->route('adminDashboard')->with('success', 'Pass rejected.');
+    }
+
+    /**
+     * Determine the expiry date based on applicant type and reason.
+     */
+    protected function determineExpiry(TemporaryPass $pass, CarbonImmutable $start): CarbonImmutable
+    {
+        if ($pass->passable_type === UniversityMember::class && $pass->reason === 'lost_id') {
+            return $start->addDays(7);
+        }
+
+        return $start->addDay();
+    }
+
+    /**
+     * Resolve email recipient for notifications.
+     */
+    protected function resolveRecipientEmail(TemporaryPass $pass): ?string
+    {
+        $passable = $pass->passable;
+
+        return $passable?->email ?? null;
     }
 }

@@ -54,6 +54,18 @@
 
         <!-- Main Content Area -->
         <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+
+            @if (session('success'))
+                <div class="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                    {{ session('error') }}
+                </div>
+            @endif
             
             <!-- Tab Navigation (from your sketch) -->
             <div class="border-b border-gray-200">
@@ -118,7 +130,7 @@
                                 <tr>
                                     <td class="border px-4 py-2">{{ $app->passable->name ?? '-' }}</td>
                                     <td class="border px-4 py-2">{{ $app->passable->email ?? '-' }}</td>
-                                    <td class="border px-4 py-2">{{ $app->reason }}</td>
+                                    <td class="border px-4 py-2">{{ $app->reason_label }}</td>
                                     <td class="border px-4 py-2">{{ $app->valid_from ? $app->valid_from->format('Y-m-d H:i') : '-' }}</td>
                                     <td class="border px-4 py-2">{{ $app->valid_until ? $app->valid_until->format('Y-m-d H:i') : '-' }}</td>
                                     <td class="border px-4 py-2">{{ ucfirst($app->status) }}</td>
@@ -150,7 +162,7 @@
                                 <tr>
                                     <td class="border px-4 py-2">{{ $app->passable->name ?? '-' }}</td>
                                     <td class="border px-4 py-2">{{ $app->passable->email ?? '-' }}</td>
-                                    <td class="border px-4 py-2">{{ $app->reason }}</td>
+                                    <td class="border px-4 py-2">{{ $app->reason_label }}</td>
                                     <td class="border px-4 py-2">{{ $app->valid_from ? $app->valid_from->format('Y-m-d H:i') : '-' }}</td>
                                     <td class="border px-4 py-2">{{ $app->valid_until ? $app->valid_until->format('Y-m-d H:i') : '-' }}</td>
                                     <td class="border px-4 py-2">{{ ucfirst($app->status) }}</td>

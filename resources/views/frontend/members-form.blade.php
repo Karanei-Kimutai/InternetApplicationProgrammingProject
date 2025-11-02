@@ -2,6 +2,8 @@
 
 @section('content')
 
+  @php($reasonOptions = \App\Models\TemporaryPass::MEMBER_REASON_LABELS)
+
   <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl mt-12 border overflow-hidden">
 
     <!-- Header -->
@@ -17,8 +19,31 @@
 
     <!-- Body -->
     <div class="px-8 pb-8">
+      @if (session('status'))
+        <div class="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          {{ session('status') }}
+        </div>
+      @endif
+
+      @if (session('error'))
+        <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {{ session('error') }}
+        </div>
+      @endif
+
+      @if ($errors->any())
+        <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          <p class="font-semibold">Please fix the following:</p>
+          <ul class="mt-1 list-disc pl-5 space-y-1">
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
+
       <div class="mb-6 rounded-lg bg-blue-50 text-blue-900 border border-blue-100 px-4 py-3 text-sm">
-        Your details are pre-filled from AMS. Review and select a reason.
+        Your details are pre-filled from AMS. Choose the reason carefully—Lost ID passes last 7 days, all others last 1 day. Lost/Misplaced ID requests are limited to one every 30 days.
       </div>
 
       <form action="{{ route('tpas.members.submit') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -62,16 +87,18 @@
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"><path fill-rule="evenodd" d="M12 3.75a8.25 8.25 0 1 0 0 16.5 8.25 8.25 0 0 0 0-16.5ZM10.5 9a1.5 1.5 0 1 1 3 0v3a1.5 1.5 0 1 1-3 0V9Zm1.5 7.5a1.125 1.125 0 1 1 0-2.25 1.125 1.125 0 0 1 0 2.25Z" clip-rule="evenodd"/></svg>
             </span>
             <select id="reason" name="reason" class="w-full pl-10 pr-10 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none">
-              <option value="" class="text-gray-400">Please select a reason...</option>
-              <option value="lost_card">Lost/Forgotten ID Card</option>
-              <option value="damaged_card">Damaged ID Card</option>
-              <option value="campus_event">Attending special campus event</option>
-              <option value="other">Other</option>
+              <option value="" class="text-gray-400" disabled {{ old('reason') ? '' : 'selected' }}>Please select a reason...</option>
+              @foreach ($reasonOptions as $value => $label)
+                <option value="{{ $value }}" @selected(old('reason') === $value)>{{ $label }}</option>
+              @endforeach
             </select>
             <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"><path fill-rule="evenodd" d="M12 14.25a.75.75 0 0 1-.53-.22l-4.5-4.5a.75.75 0 1 1 1.06-1.06L12 12.44l3.97-3.97a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-.53.22Z" clip-rule="evenodd"/></svg>
             </span>
           </div>
+          @error('reason')
+            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+          @enderror
         </div>
 
         <!-- Actions -->

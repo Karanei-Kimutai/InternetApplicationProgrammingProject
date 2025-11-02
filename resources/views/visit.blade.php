@@ -34,18 +34,41 @@
         <h1 class="text-2xl font-bold text-center text-gray-700">Guest Pass Application</h1>
         <p class="mt-2 mb-6 text-center text-sm text-gray-600">For visitors who need short-term access.</p>
 
+        @if (session('status'))
+            <div class="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+                {{ session('status') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                <p class="font-semibold">Please fix the following:</p>
+                <ul class="mt-1 list-disc pl-5 space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form action="{{ route('visit.submit') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="mb-4">
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                <input type="text" name="name" id="name" required
+                <input type="text" name="name" id="name" value="{{ old('name') }}" required
                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
 
             <div class="mb-4">
                 <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                <input type="email" name="email" id="email" required
+                <input type="email" name="email" id="email" value="{{ old('email') }}" required
                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
 
@@ -63,7 +86,7 @@
             <div class="mb-6">
                 <label for="reason" class="block text-sm font-medium text-gray-700 mb-1">Reason for Visit</label>
                 <textarea name="reason" id="reason" rows="4" required
-                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('reason') }}</textarea>
             </div>
 
             <div class="space-y-3">
