@@ -8,6 +8,7 @@ use App\Models\UniversityMember;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
+use App\Jobs\SendTemporaryPassEmail;
 
 class MemberTemporaryPassController extends Controller
 {
@@ -67,10 +68,12 @@ class MemberTemporaryPassController extends Controller
         $qrShow = route('tpas.qr.show', ['token' => $temporaryPass->qr_code_token]);
         $qrVerify = route('tpas.qr.verify', ['token' => $temporaryPass->qr_code_token]);
 
-        $temporaryPass->logEmail(
-            $memberEmail,
-            'Temporary Pass Approved',
-            'sent'
+        $log = $temporaryPass->logEmail($memberEmail, 'Temporary Pass Approved', 'queued');
+        SendTemporaryPassEmail::dispatch(
+            temporaryPassId: $temporaryPass->id,
+            recipientEmail: $memberEmail,
+            recipientName: $memberName,
+            emailLogId: $log->id
         );
 
         return redirect()->route('confirmation')

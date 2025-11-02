@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Redirect;
+use App\Jobs\SendTemporaryPassEmail;
 
 class AdminController extends Controller
 {
@@ -90,8 +91,17 @@ class AdminController extends Controller
 
         $pass->save();
 
+        // Ensure a QR image exists for approved passes
+        $pass->generateQrCodeImage(payload: route('tpas.qr.verify', ['token' => $pass->qr_code_token]));
+
         if ($recipient = $this->resolveRecipientEmail($pass)) {
-            $pass->logEmail($recipient, 'Temporary Pass Approved', 'sent');
+            $log = $pass->logEmail($recipient, 'Temporary Pass Approved', 'queued');
+            SendTemporaryPassEmail::dispatch(
+                temporaryPassId: $pass->id,
+                recipientEmail: $recipient,
+                recipientName: $pass->passable->name ?? 'Guest/Member',
+                emailLogId: $log->id
+            );
         }
 
         return redirect()->route('adminDashboard')->with('success', 'Pass approved.');
