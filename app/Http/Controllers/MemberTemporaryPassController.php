@@ -5,12 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreMemberTemporaryPassRequest;
 use App\Models\TemporaryPass;
 use App\Models\UniversityMember;
+use App\Services\ApplicationMailer;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 
 class MemberTemporaryPassController extends Controller
 {
+    public function __construct(private readonly ApplicationMailer $mailer)
+    {
+    }
+
     /**
      * Handle the submission of a university member temporary pass request.
      */
@@ -36,10 +41,24 @@ class MemberTemporaryPassController extends Controller
                 'reason' => $reason,
             ]);
 
+            $subject = 'Temporary Pass Application Rejected - Visit security office';
+            $mailResult = $this->mailer->sendUsingView(
+                'emails.member-physical-required',
+                [
+                    'recipientName' => $memberName,
+                    'reasonLabel' => $temporaryPass->reason_label,
+                    'senderName' => config('app.name') . ' Security Office',
+                ],
+                $subject,
+                $memberEmail,
+                $memberName
+            );
+
             $temporaryPass->logEmail(
                 $memberEmail,
-                'Temporary Pass Application Rejected - Visit security office',
-                'sent'
+                $subject,
+                $mailResult->sent ? 'sent' : 'failed',
+                $mailResult->error
             );
 
             return redirect()->back()->with('error', 'You have reached the limit for this reason within the last 30 days. Please visit the security office to apply physically.');
@@ -67,10 +86,50 @@ class MemberTemporaryPassController extends Controller
         $qrShow = route('tpas.qr.show', ['token' => $temporaryPass->qr_code_token]);
         $qrVerify = route('tpas.qr.verify', ['token' => $temporaryPass->qr_code_token]);
 
+        $subject = 'Temporary Pass Approved';
+        $attachments = [];
+
+        $timezone = config('app.timezone', 'UTC');
+        $validFromFormatted = $temporaryPass->valid_from
+            ? $temporaryPass->valid_from->timezone($timezone)->format('D, d M Y g:i A')
+            : 'Pending activation';
+        $validUntilFormatted = $temporaryPass->valid_until
+            ? $temporaryPass->valid_until->timezone($timezone)->format('D, d M Y g:i A')
+            : 'Pending activation';
+
+        if ($temporaryPass->qr_code_path) {
+            $qrFullPath = storage_path('app/public/' . ltrim($temporaryPass->qr_code_path, '/'));
+            if (is_readable($qrFullPath)) {
+                $attachments[] = [
+                    'path' => $qrFullPath,
+                    'name' => 'temporary-pass-qr.png',
+                ];
+            }
+        }
+
+        $mailResult = $this->mailer->sendUsingView(
+            'emails.member-pass-approved',
+            [
+                'recipientName' => $memberName,
+                'reasonLabel' => $temporaryPass->reason_label,
+                'validFrom' => $validFromFormatted,
+                'validUntil' => $validUntilFormatted,
+                'passReference' => strtoupper(substr($temporaryPass->qr_code_token ?? '', 0, 8)),
+                'qrShowUrl' => $qrShow,
+                'qrVerifyUrl' => $qrVerify,
+                'senderName' => config('app.name') . ' Security Office',
+            ],
+            $subject,
+            $memberEmail,
+            $memberName,
+            $attachments
+        );
+
         $temporaryPass->logEmail(
             $memberEmail,
-            'Temporary Pass Approved',
-            'sent'
+            $subject,
+            $mailResult->sent ? 'sent' : 'failed',
+            $mailResult->error
         );
 
         return redirect()->route('confirmation')

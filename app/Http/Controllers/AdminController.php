@@ -8,6 +8,7 @@ use App\Models\Admin;
 use App\Models\Guest;
 use App\Models\TemporaryPass;
 use App\Models\UniversityMember;
+use App\Services\ApplicationMailer;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,10 @@ use Illuminate\Support\Facades\Redirect;
 
 class AdminController extends Controller
 {
+    public function __construct(private readonly ApplicationMailer $mailer)
+    {
+    }
+
     // Resource methods
     public function index() { }
     public function create() { }
@@ -90,8 +95,14 @@ class AdminController extends Controller
 
         $pass->save();
 
+        if (!$pass->qr_code_path) {
+            $pass->generateQrCodeImage(
+                payload: route('tpas.qr.verify', ['token' => $pass->qr_code_token])
+            );
+        }
+
         if ($recipient = $this->resolveRecipientEmail($pass)) {
-            $pass->logEmail($recipient, 'Temporary Pass Approved', 'sent');
+            $this->sendApprovalEmail($pass, $recipient);
         }
 
         return redirect()->route('adminDashboard')->with('success', 'Pass approved.');
@@ -108,7 +119,7 @@ class AdminController extends Controller
         $pass->save();
 
         if ($recipient = $this->resolveRecipientEmail($pass)) {
-            $pass->logEmail($recipient, 'Temporary Pass Application Rejected', 'sent');
+            $this->sendRejectionEmail($pass, $recipient);
         }
 
         return redirect()->route('adminDashboard')->with('success', 'Pass rejected.');
@@ -134,6 +145,101 @@ class AdminController extends Controller
         $passable = $pass->passable;
 
         return $passable?->email ?? null;
+    }
+
+    /**
+     * Notify an applicant that their pass has been approved.
+     */
+    protected function sendApprovalEmail(TemporaryPass $pass, string $recipient): void
+    {
+        $passableName = $pass->passable?->name ?? 'Applicant';
+        $subject = 'Temporary Pass Approved';
+        $timezone = config('app.timezone', 'UTC');
+        $qrShow = route('tpas.qr.show', ['token' => $pass->qr_code_token]);
+        $qrVerify = route('tpas.qr.verify', ['token' => $pass->qr_code_token]);
+
+        $attachments = [];
+        if ($pass->qr_code_path) {
+            $qrFullPath = storage_path('app/public/' . ltrim($pass->qr_code_path, '/'));
+            if (is_readable($qrFullPath)) {
+                $attachments[] = [
+                    'path' => $qrFullPath,
+                    'name' => 'temporary-pass-qr.png',
+                ];
+            }
+        }
+
+        if ($pass->passable_type === UniversityMember::class) {
+            $mailResult = $this->mailer->sendUsingView(
+                'emails.member-pass-approved',
+                [
+                    'recipientName' => $passableName,
+                    'reasonLabel' => $pass->reason_label,
+                    'validFrom' => optional($pass->valid_from)?->timezone($timezone)->format('D, d M Y g:i A') ?? 'Pending activation',
+                    'validUntil' => optional($pass->valid_until)?->timezone($timezone)->format('D, d M Y g:i A') ?? 'Pending activation',
+                    'passReference' => strtoupper(substr($pass->qr_code_token ?? '', 0, 8)),
+                    'qrShowUrl' => $qrShow,
+                    'qrVerifyUrl' => $qrVerify,
+                    'senderName' => config('app.name') . ' Security Office',
+                ],
+                $subject,
+                $recipient,
+                $passableName,
+                $attachments
+            );
+        } else {
+            $mailResult = $this->mailer->sendUsingView(
+                'emails.guest-pass-approved',
+                [
+                    'recipientName' => $passableName,
+                    'reasonLabel' => $pass->reason_label,
+                    'validFrom' => optional($pass->valid_from)?->timezone($timezone)->format('D, d M Y g:i A') ?? 'Pending activation',
+                    'validUntil' => optional($pass->valid_until)?->timezone($timezone)->format('D, d M Y g:i A') ?? 'See security desk',
+                    'qrShowUrl' => $qrShow,
+                    'qrVerifyUrl' => $qrVerify,
+                    'senderName' => config('app.name') . ' Security Office',
+                ],
+                $subject,
+                $recipient,
+                $passableName,
+                $attachments
+            );
+        }
+
+        $pass->logEmail(
+            $recipient,
+            $subject,
+            $mailResult->sent ? 'sent' : 'failed',
+            $mailResult->error
+        );
+    }
+
+    /**
+     * Notify an applicant that their pass was rejected.
+     */
+    protected function sendRejectionEmail(TemporaryPass $pass, string $recipient): void
+    {
+        $passableName = $pass->passable?->name ?? 'Applicant';
+        $subject = 'Temporary Pass Application Rejected';
+
+        $mailResult = $this->mailer->sendUsingView(
+            'emails.pass-rejected',
+            [
+                'recipientName' => $passableName,
+                'reasonLabel' => $pass->reason_label,
+                'senderName' => config('app.name') . ' Security Office',
+            ],
+            $subject,
+            $recipient,
+            $passableName
+        );
+
+        $pass->logEmail(
+            $recipient,
+            $subject,
+            $mailResult->sent ? 'sent' : 'failed',
+            $mailResult->error
+        );
     }
 
     /**
