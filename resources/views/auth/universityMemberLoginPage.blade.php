@@ -25,7 +25,7 @@
     <div class="w-full bg-white/90 backdrop-blur border-b">
         <div class="mx-auto max-w-7xl px-4 py-3 flex items-center gap-3">
             <img src="{{ asset('images/strathmore_logo.png') }}" alt="University Logo" class="h-8 w-auto object-contain" />
-            <span class="text-base sm:text-lg font-semibold text-gray-900">suLMS (Dummy)</span>
+            <span class="text-base sm:text-lg font-semibold text-gray-900">Strathmore University</span>
         </div>
     </div>
 

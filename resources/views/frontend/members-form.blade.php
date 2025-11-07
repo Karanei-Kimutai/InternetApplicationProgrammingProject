@@ -43,7 +43,7 @@
       @endif
 
       <div class="mb-6 rounded-lg bg-blue-50 text-blue-900 border border-blue-100 px-4 py-3 text-sm">
-        Your details are pre-filled from AMS. Choose the reason carefully—Lost ID passes last 7 days, all others last 1 day. Lost/Misplaced ID requests are limited to one every 30 days.
+        Your details are pre-filled from AMS. Choose the reason carefully.
       </div>
 
       <form action="{{ route('tpas.members.submit') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
