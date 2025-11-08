@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GuestTemporaryPassController;
 use App\Http\Controllers\MemberTemporaryPassController;
+use App\Http\Controllers\SecurityAuthController;
+use App\Http\Controllers\SecurityVerificationController;
 
 // Homepage → University Member Login first
 Route::get('/', function () {
@@ -135,6 +137,20 @@ Route::middleware('auth:web')->group(function () {
 
     // Reject a guest/application pass
     Route::post('/admin/pass/{id}/reject', [App\Http\Controllers\AdminController::class, 'rejectPass'])->name('admin.pass.reject');
+});
+
+// Security guard portal
+Route::prefix('security')->name('security.')->group(function () {
+    Route::middleware('guest:security')->group(function () {
+        Route::get('/login', [SecurityAuthController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [SecurityAuthController::class, 'login'])->name('login.submit');
+    });
+
+    Route::middleware('auth:security')->group(function () {
+        Route::post('/logout', [SecurityAuthController::class, 'logout'])->name('logout');
+        Route::get('/verify', [SecurityVerificationController::class, 'showPortal'])->name('verify');
+        Route::post('/lookup', [SecurityVerificationController::class, 'lookup'])->name('lookup');
+    });
 });
 
 // Admin: reset a member's 30‑day rate limit (local/testing convenience)
