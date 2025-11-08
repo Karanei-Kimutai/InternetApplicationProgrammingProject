@@ -129,11 +129,13 @@ Route::get('/apply-guest', function () {
     return redirect()->route('visit.show');
 })->name('apply.guest');
 
-// Approve a guest application
-Route::post('/admin/pass/{id}/approve', [App\Http\Controllers\AdminController::class, 'approvePass'])->name('admin.pass.approve');
+Route::middleware('auth:web')->group(function () {
+    // Approve a guest/application pass
+    Route::post('/admin/pass/{id}/approve', [App\Http\Controllers\AdminController::class, 'approvePass'])->name('admin.pass.approve');
 
-// Reject a guest application
-Route::post('/admin/pass/{id}/reject', [App\Http\Controllers\AdminController::class, 'rejectPass'])->name('admin.pass.reject');
+    // Reject a guest/application pass
+    Route::post('/admin/pass/{id}/reject', [App\Http\Controllers\AdminController::class, 'rejectPass'])->name('admin.pass.reject');
+});
 
 // Admin: reset a member's 30‑day rate limit (local/testing convenience)
 Route::post('/admin/member/reset', [AdminController::class, 'resetMemberRateLimit'])
