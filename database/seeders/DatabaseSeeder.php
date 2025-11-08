@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             GuestSeeder::class,
             TemporaryPassSeeder::class,
             EmailLogSeeder::class,
+            SecurityStaffSeeder::class,
         ]);
     }
 }

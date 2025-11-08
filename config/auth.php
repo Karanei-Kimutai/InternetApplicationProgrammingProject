@@ -47,6 +47,11 @@ return [
             'provider' => 'university_members',
         ],
         // ---------------------------------------------
+
+        'security' => [
+            'driver' => 'session',
+            'provider' => 'security_staff',
+        ],
     ],
 
     /*
@@ -79,6 +84,11 @@ return [
             'model' => App\Models\UniversityMember::class,
         ],
         // -------------------------------------------------
+
+        'security_staff' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\SecurityStaff::class,
+        ],
 
         // 'users' => [
         //     'driver' => 'database',
