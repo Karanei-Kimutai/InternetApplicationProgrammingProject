@@ -17,60 +17,103 @@
     <meta name="robots" content="noindex">
     <meta name="description" content="Confirmation that your application has been received and is being processed.">
 </head>
-<body class="min-h-screen bg-gray-100 font-sans antialiased flex items-center justify-center p-6">
-    <div class="w-full max-w-2xl bg-white rounded-xl shadow-lg p-10 text-center">
-        <div class="mx-auto mb-6 h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-9 w-9 text-green-600">
-                <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-2.59a.75.75 0 1 1 1.06 1.06l-5.25 5.25a.75.75 0 0 1-1.06 0l-2.25-2.25a.75.75 0 1 1 1.06-1.06l1.72 1.72 4.72-4.72Z" clip-rule="evenodd" />
-            </svg>
-        </div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Your application has been received</h1>
-        @if (session('status'))
-            <p class="mt-3 text-gray-700">{{ session('status') }}</p>
-        @else
-            <p class="mt-3 text-gray-600">We’re processing it now. You’ll be notified once a decision is made.</p>
-        @endif
-
-        <!-- Validity and issuance policy note (shown once here) -->
-        <div class="mt-4 rounded-md border border-amber-200 bg-amber-50 text-amber-900 px-4 py-3 text-sm text-left">
-            <p>
-                Lost ID passes last 7 days; all other passes last 1 day. Lost/Misplaced ID requests are limited to one every 30 days.
-            </p>
-        </div>
-
-        @if (session('qr_url'))
-            <div class="mt-6 text-left">
-                <h2 class="text-lg font-semibold text-gray-900">Your QR Code</h2>
-                <p class="text-sm text-gray-600 mt-1">Use this QR code at the gate. Keep it safe and do not share.</p>
-                <div class="mt-3 flex items-center gap-3">
-                    <a href="{{ session('qr_url') }}" target="_blank" rel="noopener"
-                       class="inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-3 text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        View QR Image
-                    </a>
-                    @if (session('verify_url'))
-                        <a href="{{ session('verify_url') }}" target="_blank" rel="noopener"
-                           class="inline-flex items-center justify-center rounded-md bg-gray-100 px-5 py-3 text-gray-900 font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300">
-                            Verify JSON
-                        </a>
-                    @endif
+<body class="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 font-sans antialiased py-12 px-4">
+@php
+    $statusMessage = session('status') ?? 'Temporary pass issued successfully.';
+    $qrToken = session('qr_token');
+    $passReference = $qrToken ? strtoupper(substr($qrToken, 0, 8)) : 'Pending';
+    $timezone = config('app.timezone', 'UTC');
+    $validFrom = session('valid_from') ? \Carbon\Carbon::parse(session('valid_from'))->timezone($timezone)->format('D, d M Y g:i A') : 'Awaiting activation';
+    $validUntil = session('valid_until') ? \Carbon\Carbon::parse(session('valid_until'))->timezone($timezone)->format('D, d M Y g:i A') : 'Awaiting activation';
+    $emailHint = session('member_email') ?? 'your university email';
+@endphp
+    <main class="max-w-4xl mx-auto">
+        <div class="rounded-[32px] bg-white shadow-2xl ring-1 ring-black/5 overflow-hidden">
+            <header class="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-600 px-10 py-8 text-white">
+                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.3em] text-blue-200">Temporary Pass Confirmation</p>
+                        <h1 class="mt-2 text-3xl font-semibold">You're all set.</h1>
+                        <p class="mt-2 text-sm text-blue-100 max-w-2xl">{{ $statusMessage }}</p>
+                    </div>
+                    <div class="bg-white/10 rounded-2xl px-6 py-4 backdrop-blur text-sm">
+                        <p class="text-blue-100">QR + instructions sent to</p>
+                        <p class="text-base font-semibold text-white">{{ $emailHint }}</p>
+                    </div>
                 </div>
-                @if (session('valid_from') || session('valid_until'))
-                    <p class="mt-3 text-xs text-gray-500">
-                        @if (session('valid_from'))
-                            Valid from: {{ session('valid_from') }}
-                        @endif
-                        @if (session('valid_until'))
-                            • Valid until: {{ session('valid_until') }}
-                        @endif
-                    </p>
-                @endif
-            </div>
-        @endif
+            </header>
 
-        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <a href="{{ route('ams.dashboard') }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-3 text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">Go to AMS Dashboard</a>
-            <a href="{{ route('ams.dashboard') }}" class="inline-flex items-center justify-center rounded-md bg-gray-100 px-5 py-3 text-gray-900 font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300">Back to Home</a>
+            <section class="px-10 py-8 space-y-8">
+                <div class="grid gap-6 md:grid-cols-3">
+                    <div class="rounded-2xl border border-slate-200 p-5 shadow-sm">
+                        <p class="text-xs uppercase tracking-wide text-slate-500">Pass reference</p>
+                        <p class="mt-3 text-2xl font-semibold text-slate-900">{{ $passReference }}</p>
+                        <p class="mt-2 text-xs text-slate-500">Matches the code in your email receipt.</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 p-5 shadow-sm">
+                        <p class="text-xs uppercase tracking-wide text-slate-500">Valid window</p>
+                        <p class="mt-3 text-base font-medium text-slate-900">{{ $validFrom }}</p>
+                        <p class="text-slate-400 text-sm">to</p>
+                        <p class="text-base font-medium text-slate-900">{{ $validUntil }}</p>
+                        <p class="mt-2 text-xs text-slate-500">Lost IDs last 7 days; other reasons 24 hours.</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 p-5 shadow-sm bg-slate-50">
+                        <p class="text-xs uppercase tracking-wide text-slate-500">Rate limit</p>
+                        <p class="mt-3 text-sm text-slate-800">Lost/Misplaced ID requests are limited to once every 30 days. Security can reset this if needed.</p>
+                    </div>
+                </div>
+
+                @if (session('qr_url'))
+                    <div class="rounded-3xl border border-blue-100 bg-gradient-to-r from-blue-50 via-white to-blue-50 p-6 shadow-inner flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <h2 class="text-xl font-semibold text-blue-900">Need the QR right away?</h2>
+                            <p class="text-sm text-blue-700 max-w-2xl">The code is already in your inbox, but you can open it instantly using the buttons below. Please do not share the QR outside official security staff.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-3">
+                            <a href="{{ session('qr_url') }}" target="_blank" rel="noopener"
+                               class="inline-flex items-center rounded-2xl bg-blue-600 px-5 py-2.5 text-white text-sm font-medium shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                View QR
+                            </a>
+                            @if (session('verify_url'))
+                                <a href="{{ session('verify_url') }}" target="_blank" rel="noopener"
+                                   class="inline-flex items-center rounded-2xl bg-white px-5 py-2.5 text-sm font-medium text-blue-700 shadow hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                                    Verify token
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+
+                <div class="rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <p class="text-sm font-semibold text-slate-800 uppercase tracking-wide">Before you arrive</p>
+                    <ol class="mt-4 space-y-4 text-sm text-slate-600">
+                        <li class="flex gap-3">
+                            <span class="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">1</span>
+                            Present your student ID receipt and the emailed QR code to the security team. Screenshots are acceptable.
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">2</span>
+                            Arrive 10 minutes early to allow QR scanning and identity verification at the gate.
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">3</span>
+                            Need adjustments? Reply to the confirmation email or visit the security office for manual assistance.
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="flex flex-col gap-3 md:flex-row md:justify-end">
+                    <a href="{{ route('ams.dashboard') }}"
+                       class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-6 py-3 text-white font-medium shadow hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500">
+                        Return to AMS dashboard
+                    </a>
+                    <a href="{{ route('tpas.members.apply') }}"
+                       class="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-6 py-3 text-slate-800 font-medium shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200">
+                        Submit another request
+                    </a>
+                </div>
+            </section>
         </div>
-    </div>
+    </main>
 </body>
 </html>
