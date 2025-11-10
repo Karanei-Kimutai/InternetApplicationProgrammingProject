@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Guest;
 use App\Models\TemporaryPass;
+use App\Models\UniversityMember;
 use Illuminate\Http\Request;
 
 class SecurityVerificationController extends Controller
@@ -40,6 +42,37 @@ class SecurityVerificationController extends Controller
             'valid_from' => optional($pass->valid_from)?->toIso8601String(),
             'valid_until' => optional($pass->valid_until)?->toIso8601String(),
             'qr_token' => $pass->qr_code_token,
+            'holder_photo_url' => $this->resolveHolderPhotoUrl($pass->passable),
         ]);
+    }
+
+    private function resolveHolderPhotoUrl($passable): ?string
+    {
+        if (! $passable) {
+            return null;
+        }
+
+        if ($passable instanceof Guest) {
+            return $this->formatPhotoUrl($passable->profile_image_path);
+        }
+
+        if ($passable instanceof UniversityMember) {
+            return $this->formatPhotoUrl($passable->photo_url);
+        }
+
+        return $this->formatPhotoUrl($passable->photo_url ?? $passable->profile_image_path ?? null);
+    }
+
+    private function formatPhotoUrl(?string $path): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
+        }
+
+    return asset('storage/' . ltrim($path, '/'));
     }
 }

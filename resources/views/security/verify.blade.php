@@ -44,6 +44,17 @@
                 <p id="statusText" class="text-lg font-semibold">Awaiting lookup…</p>
             </div>
             <dl class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-sm text-slate-200">
+                <div class="sm:col-span-2 lg:col-span-1">
+                    <dt class="text-slate-400 uppercase tracking-wide text-xs">Profile photo</dt>
+                    <dd class="mt-1">
+                        <div class="mt-2 flex items-center">
+                            <div class="relative h-28 w-28 overflow-hidden rounded-2xl border border-white/20 bg-white/10">
+                                <img id="holderPhoto" class="hidden h-full w-full object-cover" alt="Pass holder photo">
+                                <div id="holderPhotoFallback" class="flex h-full w-full items-center justify-center text-[0.65rem] font-semibold uppercase tracking-wide text-slate-400">No photo</div>
+                            </div>
+                        </div>
+                    </dd>
+                </div>
                 <div>
                     <dt class="text-slate-400 uppercase tracking-wide text-xs">Holder</dt>
                     <dd class="mt-1 font-medium" id="holderName">—</dd>
@@ -94,6 +105,8 @@
         const passReason = document.getElementById('passReason');
         const validFrom = document.getElementById('validFrom');
         const validUntil = document.getElementById('validUntil');
+        const holderPhoto = document.getElementById('holderPhoto');
+        const holderPhotoFallback = document.getElementById('holderPhotoFallback');
         const scannerContainer = document.getElementById('scannerContainer');
         const qrVideo = document.getElementById('qrVideo');
         const stopScan = document.getElementById('stopScan');
@@ -128,6 +141,12 @@
             resultCard.classList.remove('hidden');
         };
 
+        const resetHolderPhoto = () => {
+            holderPhoto.classList.add('hidden');
+            holderPhoto.removeAttribute('src');
+            holderPhotoFallback.classList.remove('hidden');
+        };
+
         const runLookup = async (token) => {
             if (!token) {
                 setStatus(false, 'Enter a token first.');
@@ -136,6 +155,7 @@
 
             setStatus(true, 'Checking...');
             holderName.textContent = holderEmail.textContent = passReference.textContent = passReason.textContent = validFrom.textContent = validUntil.textContent = '—';
+            resetHolderPhoto();
 
             try {
                 const response = await fetch('{{ route('security.lookup') }}', {
@@ -162,6 +182,12 @@
                 passReason.textContent = data.reason ?? '—';
                 validFrom.textContent = data.valid_from ? new Date(data.valid_from).toLocaleString() : '—';
                 validUntil.textContent = data.valid_until ? new Date(data.valid_until).toLocaleString() : '—';
+                if (data.holder_photo_url) {
+                    holderPhoto.src = data.holder_photo_url;
+                    holderPhoto.alt = `${data.holder_name ?? 'Pass holder'} photo`;
+                    holderPhoto.classList.remove('hidden');
+                    holderPhotoFallback.classList.add('hidden');
+                }
             } catch (error) {
                 console.error(error);
                 setStatus(false, 'Unable to contact server.');
