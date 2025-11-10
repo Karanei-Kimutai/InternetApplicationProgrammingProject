@@ -100,6 +100,28 @@
         let scanStream = null;
         let scanInterval = null;
 
+        const extractToken = (raw) => {
+            const trimmed = (raw ?? '').trim();
+            if (!trimmed) {
+                return '';
+            }
+
+            if (trimmed.includes('://')) {
+                try {
+                    const url = new URL(trimmed);
+                    const segments = url.pathname.split('/').filter(Boolean);
+                    if (segments.length) {
+                        return segments.pop();
+                    }
+                } catch (error) {
+                    // Ignore parse failures and fall back to regex
+                }
+            }
+
+            const match = trimmed.match(/([A-Za-z0-9-]{10,})$/);
+            return match ? match[1] : trimmed;
+        };
+
         const setStatus = (ok, text) => {
             statusText.textContent = text;
             statusDot.className = `h-3 w-3 rounded-full ${ok ? 'bg-emerald-400' : 'bg-red-400'}`;
@@ -146,9 +168,9 @@
             }
         };
 
-        lookupBtn.addEventListener('click', () => runLookup(tokenInput.value.trim()));
+        lookupBtn.addEventListener('click', () => runLookup(extractToken(tokenInput.value)));
         tokenInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') runLookup(tokenInput.value.trim());
+            if (e.key === 'Enter') runLookup(extractToken(tokenInput.value));
         });
 
         const stopCamera = () => {
@@ -189,7 +211,7 @@
                         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                         const code = jsQR(imageData.data, imageData.width, imageData.height);
                         if (code?.data) {
-                            tokenInput.value = code.data.trim();
+                            tokenInput.value = extractToken(code.data);
                             stopCamera();
                             runLookup(tokenInput.value);
                         }
