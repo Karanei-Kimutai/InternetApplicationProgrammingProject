@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
 class TemporaryPass extends Model
 {
     /** @use HasFactory<\Database\Factories\TemporaryPassFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     public const MEMBER_REASON_LABELS = [
         'lost_id' => 'Lost University ID',

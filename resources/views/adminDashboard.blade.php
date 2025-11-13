@@ -72,6 +72,11 @@
                 </p>
                 <p class="text-xs text-slate-500 mt-1">awaiting action</p>
             </article>
+            <article class="rounded-3xl bg-white border border-slate-200 p-5 shadow-sm">
+                <p class="text-xs uppercase tracking-wide text-slate-400">Archived passes</p>
+                <p class="mt-2 text-3xl font-semibold text-slate-900">{{ $statistics['archived_count'] ?? 0 }}</p>
+                <p class="text-xs text-slate-500 mt-1">soft-deleted records</p>
+            </article>
             <article class="rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-500 p-5 text-white shadow-lg">
                 <p class="text-xs uppercase tracking-wide text-white/70">Today’s focus</p>
                 <p class="mt-2 text-lg font-semibold">Resolve all pending requests</p>
@@ -121,6 +126,13 @@
                                                     <button type="submit" class="px-3 py-1.5 rounded-xl bg-red-500 text-white text-xs font-semibold hover:bg-red-600">Reject</button>
                                                 </form>
                                             @endif
+                                            @if($application->status !== 'approved' || optional($application->valid_until)->isPast())
+                                                <form action="{{ route('admin.pass.destroy', $application->id) }}" method="POST" onsubmit="return confirm('Archive this pass? This cannot be undone.');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="px-3 py-1.5 rounded-xl bg-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-300">Archive</button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </div>
                                 @empty
@@ -150,6 +162,13 @@
                                                 <form action="{{ route('admin.pass.reject', $application->id) }}" method="POST">
                                                     @csrf
                                                     <button type="submit" class="px-3 py-1.5 rounded-xl bg-red-500 text-white text-xs font-semibold hover:bg-red-600">Reject</button>
+                                                </form>
+                                            @endif
+                                            @if($application->status !== 'approved' || optional($application->valid_until)->isPast())
+                                                <form action="{{ route('admin.pass.destroy', $application->id) }}" method="POST" onsubmit="return confirm('Archive this pass? This cannot be undone.');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="px-3 py-1.5 rounded-xl bg-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-300">Archive</button>
                                                 </form>
                                             @endif
                                         </div>
@@ -193,6 +212,39 @@
                         <li>Clear pending approvals before end of day to avoid gate delays.</li>
                         <li>Use the rate-limit reset tool sparingly and always log manual overrides.</li>
                         <li>Monitor email logs for any failed deliveries and resubmit if needed.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+                    <div class="flex items-center justify-between">
+                        <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Archived passes</p>
+                        <span class="text-xs text-slate-400">{{ $statistics['archived_count'] ?? 0 }} total</span>
+                    </div>
+                    <ul class="mt-4 space-y-4 text-sm text-slate-600">
+                        @forelse ($archivedPasses as $archived)
+                            <li class="rounded-2xl border border-slate-100 p-3">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="font-semibold text-slate-900">{{ $archived->passable->name ?? 'Unknown' }}</p>
+                                        <p class="text-xs text-slate-500 uppercase tracking-wide">{{ $archived->reason_label }}</p>
+                                        <p class="text-xs text-slate-400">Archived {{ optional($archived->deleted_at)->diffForHumans() }}</p>
+                                    </div>
+                                    <div class="flex flex-col gap-2">
+                                        <form action="{{ route('admin.pass.restore', $archived->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="w-full rounded-xl bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-200">Restore</button>
+                                        </form>
+                                        <form action="{{ route('admin.pass.purge', $archived->id) }}" method="POST" onsubmit="return confirm('Permanently delete this pass? This cannot be undone.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="w-full rounded-xl bg-red-100 px-3 py-1 text-xs font-semibold text-red-700 hover:bg-red-200">Purge</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </li>
+                        @empty
+                            <li class="text-slate-500 text-sm">No archived passes yet.</li>
+                        @endforelse
                     </ul>
                 </div>
             </div>

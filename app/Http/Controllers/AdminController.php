@@ -73,9 +73,21 @@ class AdminController extends Controller
         $statistics = [
             'university_count' => TemporaryPass::where('passable_type', UniversityMember::class)->count(),
             'guest_count' => TemporaryPass::where('passable_type', Guest::class)->count(),
+            'archived_count' => TemporaryPass::onlyTrashed()->count(),
         ];
 
-        return view('adminDashboard', compact('universityApplications', 'guestApplications', 'statistics'));
+        $archivedPasses = TemporaryPass::onlyTrashed()
+            ->with('passable')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('adminDashboard', compact(
+            'universityApplications',
+            'guestApplications',
+            'statistics',
+            'archivedPasses'
+        ));
     }
 
     // Approve/Reject actions

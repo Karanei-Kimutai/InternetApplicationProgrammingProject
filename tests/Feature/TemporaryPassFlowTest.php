@@ -314,6 +314,77 @@ class TemporaryPassFlowTest extends TestCase
         $pass->delete();
     }
 
+    public function test_admin_can_archive_inactive_pass(): void
+    {
+        $this->mockMailer();
+
+        $admin = $this->createAdmin();
+        $guest = Guest::create([
+            'name' => 'Archive Guest',
+            'email' => 'archive@example.com',
+        ]);
+
+        $pass = TemporaryPass::create([
+            'passable_type' => Guest::class,
+            'passable_id' => $guest->id,
+            'status' => 'rejected',
+            'reason' => 'No longer needed',
+            'valid_until' => now()->subDay(),
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->delete(route('admin.pass.destroy', $pass));
+
+        $response->assertRedirect(route('adminDashboard'));
+        $response->assertSessionHas('success');
+
+        $this->assertSoftDeleted('temporary_passes', ['id' => $pass->id]);
+    }
+
+    public function test_admin_can_restore_and_purge_archived_pass(): void
+    {
+        $this->mockMailer();
+
+        $admin = $this->createAdmin();
+        $guest = Guest::create([
+            'name' => 'Restore Guest',
+            'email' => 'restore@example.com',
+        ]);
+
+        $pass = TemporaryPass::create([
+            'passable_type' => Guest::class,
+            'passable_id' => $guest->id,
+            'status' => 'rejected',
+            'reason' => 'No show',
+        ]);
+
+        $pass->delete();
+
+        $restore = $this->actingAs($admin)
+            ->post(route('admin.pass.restore', $pass->id));
+
+        $restore->assertRedirect(route('adminDashboard'));
+        $restore->assertSessionHas('success');
+        $this->assertFalse($pass->fresh()->trashed());
+
+        $pass->delete();
+
+        $purge = $this->actingAs($admin)
+            ->delete(route('admin.pass.purge', $pass->id));
+
+        $purge->assertRedirect(route('adminDashboard'));
+        $purge->assertSessionHas('success');
+        $this->assertDatabaseMissing('temporary_passes', ['id' => $pass->id]);
+    }
+
+    public function test_member_form_requires_session(): void
+    {
+        $response = $this->get(route('tpas.members.apply'));
+
+        $response->assertRedirect(route('universityMemberLogin'));
+        $response->assertSessionHas('auth_error');
+    }
+
     private function mockMailer(): void
     {
         $mailer = Mockery::mock(ApplicationMailer::class);

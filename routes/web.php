@@ -9,6 +9,7 @@ use App\Http\Controllers\GuestTemporaryPassController;
 use App\Http\Controllers\MemberTemporaryPassController;
 use App\Http\Controllers\SecurityAuthController;
 use App\Http\Controllers\SecurityVerificationController;
+use App\Http\Controllers\TemporaryPassController;
 
 // Homepage → University Member Login first
 Route::get('/', function () {
@@ -59,8 +60,10 @@ Route::post('/universityMemberLogin', function (Request $request) {
 })->name('universityMemberLogin.submit');
 
 // Logout for university member
-Route::match(['get','post'], '/logout', function () {
-    session()->forget('member');
+Route::match(['get','post'], '/logout', function (Request $request) {
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
     return redirect()->route('universityMemberLogin');
 })->name('logout');
 
@@ -76,13 +79,24 @@ Route::post('/adminLogout', [AdminController::class, 'logout'])->name('adminLogo
 // Confirmation page (shared)
 Route::view('/confirmation', 'confirmation')->name('confirmation');
 
-// AMS dashboard (require simple session login)
-Route::get('/ams-dashboard', function (Request $request) {
-    if (!session()->has('member')) {
-        return redirect()->route('universityMemberLogin');
-    }
-    return view('ams.dashboard');
-})->name('ams.dashboard');
+Route::middleware('member.session')->group(function () {
+    // AMS dashboard (requires member session)
+    Route::get('/ams-dashboard', function () {
+        return view('ams.dashboard');
+    })->name('ams.dashboard');
+
+    Route::get('/members-form', function () {
+        return view('frontend.members-form');
+    })->name('tpas.members.apply');
+
+    // Submit member temporary pass form
+    Route::post('/members-form', [MemberTemporaryPassController::class, 'store'])->name('tpas.members.submit');
+
+    // Route for AMS student modules: redirect to AMS dashboard
+    Route::get('/ams-student-modules', function () {
+        return redirect()->route('ams.dashboard');
+    })->name('ams.student.modules');
+});
 
 //Admin Dashboard Route
 Route::get('/adminDashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->middleware('auth:web')->name('adminDashboard');
@@ -106,21 +120,6 @@ Route::get('/guest-form', function () {
     return redirect()->route('visit.show');
 })->name('tpas.guest.apply');
 
-Route::get('/members-form', function () {
-    if (!session()->has('member')) {
-        return redirect()->route('universityMemberLogin');
-    }
-    return view('frontend.members-form');
-})->name('tpas.members.apply');
-
-// Submit member temporary pass form
-Route::post('/members-form', [MemberTemporaryPassController::class, 'store'])->name('tpas.members.submit');
-
-// Route for AMS student modules: redirect to AMS dashboard
-Route::get('/ams-student-modules', function () {
-    return redirect()->route('ams.dashboard');
-})->name('ams.student.modules');
-
 // Route for 'Apply as Student' button
 Route::get('/apply-student', function () {
     return redirect()->route('universityMemberLogin');
@@ -137,6 +136,15 @@ Route::middleware('auth:web')->group(function () {
 
     // Reject a guest/application pass
     Route::post('/admin/pass/{id}/reject', [App\Http\Controllers\AdminController::class, 'rejectPass'])->name('admin.pass.reject');
+
+    // Archive/Delete a pass
+    Route::delete('/admin/pass/{temporaryPass}', [TemporaryPassController::class, 'destroy'])->name('admin.pass.destroy');
+
+    // Restore archived pass
+    Route::post('/admin/pass/{id}/restore', [TemporaryPassController::class, 'restore'])->name('admin.pass.restore');
+
+    // Permanently remove archived pass
+    Route::delete('/admin/pass/{id}/purge', [TemporaryPassController::class, 'forceDestroy'])->name('admin.pass.purge');
 });
 
 // Security guard portal
