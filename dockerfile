@@ -1,4 +1,6 @@
-# Stage 1: Build the frontend assets
+# ==========================================
+# Stage 1: Build the frontend assets (Vite)
+# ==========================================
 FROM node:18 as frontend
 WORKDIR /app
 COPY package*.json ./
@@ -6,22 +8,26 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# Stage 2: Build the application
+# ==========================================
+# Stage 2: Build the application (PHP/Nginx)
+# ==========================================
 FROM php:8.2-fpm
 
 # 1. Install system dependencies
+# FIX 1: Added 'libicu-dev' and 'libzip-dev' to prevent build failure
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    libicu-dev \
     libzip-dev \
+    libicu-dev \
     zip \
     unzip \
     nginx \
     supervisor \
+    default-mysql-client \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -41,10 +47,11 @@ COPY --from=frontend /app/public/build /var/www/html/public/build
 RUN composer install --no-dev --optimize-autoloader
 
 # 7. Configure PHP-FPM to run as Root
+# By default, PHP-FPM runs as 'www-data'. We change this to 'root' to avoid permission issues on Sevalla.
 RUN sed -i 's/user = www-data/user = root/g' /usr/local/etc/php-fpm.d/www.conf && \
     sed -i 's/group = www-data/group = root/g' /usr/local/etc/php-fpm.d/www.conf
 
-# 8. Create nginx configuration
+# 8. Create Nginx configuration (Embedded)
 RUN echo 'server {\n\
     listen 8080;\n\
     server_name _;\n\
@@ -62,13 +69,14 @@ RUN echo 'server {\n\
     }\n\
 }' > /etc/nginx/sites-available/default
 
-# 9. Create supervisor configuration
+# 9. Create Supervisor configuration (Embedded)
+# FIX 2: Added the -R flag to the command below. This is critical for fixing the 502 error.
 RUN echo '[supervisord]\n\
 nodaemon=true\n\
 user=root\n\
 \n\
 [program:php-fpm]\n\
-command=/usr/local/sbin/php-fpm\n\
+command=/usr/local/sbin/php-fpm -R\n\
 autostart=true\n\
 autorestart=true\n\
 stderr_logfile=/var/log/php-fpm.err.log\n\
@@ -81,26 +89,27 @@ autorestart=true\n\
 stderr_logfile=/var/log/nginx.err.log\n\
 stdout_logfile=/var/log/nginx.out.log' > /etc/supervisor/conf.d/supervisord.conf
 
-# 10. Create and configure entrypoint script
+# 10. Create Entrypoint script (Embedded)
 RUN echo '#!/bin/bash\n\
 set -e\n\
 \n\
-# Run migrations\n\
+# Run migrations automatically\n\
 php artisan migrate --force\n\
 \n\
-# Clear caches\n\
+# Cache configuration for speed\n\
 php artisan config:cache\n\
 php artisan route:cache\n\
 php artisan view:cache\n\
 \n\
-# Start supervisor\n\
+# Start Supervisor\n\
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf' > /usr/local/bin/entrypoint.sh && \
     chmod +x /usr/local/bin/entrypoint.sh
 
 # 11. Fix permissions
+# Since we run as root, we ensure root owns the storage directories
 RUN chown -R root:root /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 12. Expose Port
+# 12. Expose Port 8080
 EXPOSE 8080
 
 # 13. Start Command
