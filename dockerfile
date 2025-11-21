@@ -10,7 +10,7 @@ RUN npm run build
 FROM php:8.2-fpm
 
 # 1. Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     libpng-dev \
@@ -20,8 +20,9 @@ RUN apt-get update && apt-get install -y \
     unzip \
     nginx \
     supervisor \
-    default-mysql-client \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl
+    mysql-client \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 2. Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -101,5 +102,5 @@ RUN chown -R root:root /var/www/html/storage /var/www/html/bootstrap/cache
 # 12. Expose Port
 EXPOSE 8080
 
-# 12. Start Command
+# 13. Start Command
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
