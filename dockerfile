@@ -42,11 +42,44 @@ RUN composer install --no-dev --optimize-autoloader
 RUN sed -i 's/user = www-data/user = root/g' /usr/local/etc/php-fpm.d/www.conf && \
     sed -i 's/group = www-data/group = root/g' /usr/local/etc/php-fpm.d/www.conf
 
-# 8. Copy Configuration Files
-COPY docker/nginx.conf /etc/nginx/sites-available/default
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# 8. Create nginx configuration
+RUN echo 'server {\n\
+    listen 8080;\n\
+    server_name _;\n\
+    root /var/www/html/public;\n\
+    index index.php;\n\
+    client_max_body_size 100M;\n\
+    location / {\n\
+        try_files $uri $uri/ /index.php?$query_string;\n\
+    }\n\
+    location ~ \.php$ {\n\
+        fastcgi_pass 127.0.0.1:9000;\n\
+        fastcgi_index index.php;\n\
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;\n\
+        include fastcgi_params;\n\
+    }\n\
+}' > /etc/nginx/sites-available/default
 
-# 9. Create and configure entrypoint script
+# 9. Create supervisor configuration
+RUN echo '[supervisord]\n\
+nodaemon=true\n\
+user=root\n\
+\n\
+[program:php-fpm]\n\
+command=/usr/local/sbin/php-fpm\n\
+autostart=true\n\
+autorestart=true\n\
+stderr_logfile=/var/log/php-fpm.err.log\n\
+stdout_logfile=/var/log/php-fpm.out.log\n\
+\n\
+[program:nginx]\n\
+command=/usr/sbin/nginx -g "daemon off;"\n\
+autostart=true\n\
+autorestart=true\n\
+stderr_logfile=/var/log/nginx.err.log\n\
+stdout_logfile=/var/log/nginx.out.log' > /etc/supervisor/conf.d/supervisord.conf
+
+# 10. Create and configure entrypoint script
 RUN echo '#!/bin/bash\n\
 set -e\n\
 \n\
@@ -62,10 +95,10 @@ php artisan view:cache\n\
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf' > /usr/local/bin/entrypoint.sh && \
     chmod +x /usr/local/bin/entrypoint.sh
 
-# 10. Fix permissions
+# 11. Fix permissions
 RUN chown -R root:root /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 11. Expose Port
+# 12. Expose Port
 EXPOSE 8080
 
 # 12. Start Command
