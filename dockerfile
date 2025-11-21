@@ -20,7 +20,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     nginx \
     supervisor \
-    mysql-client \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
