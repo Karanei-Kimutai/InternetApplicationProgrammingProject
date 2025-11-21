@@ -10,7 +10,6 @@ RUN npm run build
 FROM php:8.2-fpm
 
 # 1. Install system dependencies
-# We include 'default-mysql-client' so you can run mysql commands in the terminal
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -39,22 +38,35 @@ COPY --from=frontend /app/public/build /var/www/html/public/build
 # 6. Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# 7. Configure PHP-FPM to run as Root (As requested)
-# By default, PHP-FPM blocks root. We modify the config to allow it.
+# 7. Configure PHP-FPM to run as Root
 RUN sed -i 's/user = www-data/user = root/g' /usr/local/etc/php-fpm.d/www.conf && \
     sed -i 's/group = www-data/group = root/g' /usr/local/etc/php-fpm.d/www.conf
 
 # 8. Copy Configuration Files
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 
-# 9. Fix permissions (Ensure root owns everything)
-RUN chmod +x /usr/local/bin/entrypoint.sh && \
-    chown -R root:root /var/www/html/storage /var/www/html/bootstrap/cache
+# 9. Create and configure entrypoint script
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+# Run migrations\n\
+php artisan migrate --force\n\
+\n\
+# Clear caches\n\
+php artisan config:cache\n\
+php artisan route:cache\n\
+php artisan view:cache\n\
+\n\
+# Start supervisor\n\
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf' > /usr/local/bin/entrypoint.sh && \
+    chmod +x /usr/local/bin/entrypoint.sh
 
-# 10. Expose Port
+# 10. Fix permissions
+RUN chown -R root:root /var/www/html/storage /var/www/html/bootstrap/cache
+
+# 11. Expose Port
 EXPOSE 8080
 
-# 11. Start Command
+# 12. Start Command
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
