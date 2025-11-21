@@ -14,7 +14,7 @@ RUN npm run build
 FROM php:8.2-fpm
 
 # 1. Install system dependencies
-# FIX 1: Added 'libicu-dev' and 'libzip-dev' to prevent build failure
+# FIX: Added 'libmagickwand-dev', installed 'imagick' via PECL, and enabled it.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
@@ -23,11 +23,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxml2-dev \
     libzip-dev \
     libicu-dev \
+    libmagickwand-dev \
     zip \
     unzip \
     nginx \
     supervisor \
     default-mysql-client \
+    && pecl install imagick \
+    && docker-php-ext-enable imagick \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -47,7 +50,6 @@ COPY --from=frontend /app/public/build /var/www/html/public/build
 RUN composer install --no-dev --optimize-autoloader
 
 # 7. Configure PHP-FPM to run as Root
-# By default, PHP-FPM runs as 'www-data'. We change this to 'root' to avoid permission issues on Sevalla.
 RUN sed -i 's/user = www-data/user = root/g' /usr/local/etc/php-fpm.d/www.conf && \
     sed -i 's/group = www-data/group = root/g' /usr/local/etc/php-fpm.d/www.conf
 
@@ -70,7 +72,7 @@ RUN echo 'server {\n\
 }' > /etc/nginx/sites-available/default
 
 # 9. Create Supervisor configuration (Embedded)
-# FIX 2: Added the -R flag to the command below. This is critical for fixing the 502 error.
+# Ensure -R flag is present for root execution
 RUN echo '[supervisord]\n\
 nodaemon=true\n\
 user=root\n\
@@ -106,7 +108,6 @@ exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf' > /usr/loc
     chmod +x /usr/local/bin/entrypoint.sh
 
 # 11. Fix permissions
-# Since we run as root, we ensure root owns the storage directories
 RUN chown -R root:root /var/www/html/storage /var/www/html/bootstrap/cache
 
 # 12. Expose Port 8080
