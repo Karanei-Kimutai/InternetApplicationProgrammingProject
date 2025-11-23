@@ -25,3 +25,10 @@ Step 2: The Toolbelt (Dependencies)
 Action: Added simplesoftwareio/simple-qrcode for generating pass codes and phpmailer/phpmailer for robust email delivery.
 
 Config: We also modified config/database.php here to define the "University" connection.
+
+Step 3: The Foundation (Database Schema)
+Before writing code, we defined the data structure.
+
+Models Created: Admin, Guest, TemporaryPass, SecurityStaff, UniversityMember.
+
+Migrations: We wrote the blueprints to create tables like temporary_passes (with QR code paths) and email_logs.
