@@ -32,3 +32,11 @@ Before writing code, we defined the data structure.
 Models Created: Admin, Guest, TemporaryPass, SecurityStaff, UniversityMember.
 
 Migrations: We wrote the blueprints to create tables like temporary_passes (with QR code paths) and email_logs.
+
+Step 4: The Logic (Controllers & Routes)
+
+Admin Portal: AdminController for management.
+
+Security Portal: SecurityAuthController for staff to log in and scan passes.
+
+Member Portal: UniversityMemberLoginController that checks the legacy database.
