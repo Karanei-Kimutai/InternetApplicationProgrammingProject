@@ -6,10 +6,9 @@ The Creation Log: A step-by-step history of how this project was built from an e
 
 The Setup Manual: A human-friendly guide to understanding and starting the dual-database architecture.
 
----------------------------------------------
-
+===========================================================
 Part 1: The Creation Story (Dev Log)
-----------------------------------------------
+===========================================================
 This project didn't just appear; it was built in 5 key stages. Here is the reconstruction of the development timeline:
 
 Step 1: The Skeleton (Genesis)
@@ -46,3 +45,25 @@ Step 5: The Face (Frontend & Docker)
 Views: Created the dashboard (adminDashboard.blade.php) and login pages.
 
 Deployment: Added a Dockerfile to build the app with Nginx and PHP-FPM in one go.
+
+-----------------------------------------------------------
+===========================================================
+Part 2: The "Two-Brain" Architecture
+===========================================================
+To simulate a real university environment, this system requires two separate databases. It is crucial you understand this before running the setup commands.
+
+The New Brain (temporary_pass_db)
+
+What is it? The database belonging to this specific application.
+
+What's inside? Temporary passes, guest details, system admins, and security staff logs.
+
+Who controls it? You do, via Laravel Migrations.
+
+The Old Brain (university_external_db)
+
+What is it? A simulation of the University's existing Admission System (Legacy AMS).
+
+What's inside? Thousands of students and lecturers (v_university_members).
+
+Who controls it? Nobody. We treat it as "Read-Only." We check this DB to see if a student exists, but we never save data to it.
