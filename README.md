@@ -3,7 +3,19 @@ Project Overview
 
 This is a Laravel 12 application designed to streamline the management of temporary campus passes, guest records, and security staff workflows. The system provides a digital solution for issuing and verifying temporary access passes, replacing manual logbooks with a more secure and efficient process.
 
+Key Features:
 
+University Member Portal: Secure login for students and staff using their existing university credentials (simulated via an external AMS database).
+
+Guest Access: A public-facing portal for visitors to request temporary passes.
+
+Admin Dashboard: A centralized hub for administrators to review, approve, or reject pass applications.
+
+Security Portal: A dedicated interface for security guards to verify QR codes and check pass validity in real-time.
+
+QR Code Integration: Automatic generation of secure QR codes for approved passes.
+
+Email Notifications: Automated emails for application receipts, approvals, and rejections.
 
 ## Prerequisites
 
