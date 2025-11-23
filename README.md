@@ -1,6 +1,9 @@
 # Temporary Pass Application System
+Project Overview
 
-Laravel 12 application for managing temporary campus passes, guest records, and staff workflows. The project ships with a separate dummy AMS database plus first-party tooling to make local onboarding simple.
+This is a Laravel 12 application designed to streamline the management of temporary campus passes, guest records, and security staff workflows. The system provides a digital solution for issuing and verifying temporary access passes, replacing manual logbooks with a more secure and efficient process.
+
+
 
 ## Prerequisites
 
