@@ -40,3 +40,9 @@ Admin Portal: AdminController for management.
 Security Portal: SecurityAuthController for staff to log in and scan passes.
 
 Member Portal: UniversityMemberLoginController that checks the legacy database.
+
+Step 5: The Face (Frontend & Docker)
+
+Views: Created the dashboard (adminDashboard.blade.php) and login pages.
+
+Deployment: Added a Dockerfile to build the app with Nginx and PHP-FPM in one go.
