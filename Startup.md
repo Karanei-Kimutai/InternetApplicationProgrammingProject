@@ -67,3 +67,68 @@ What is it? A simulation of the University's existing Admission System (Legacy A
 What's inside? Thousands of students and lecturers (v_university_members).
 
 Who controls it? Nobody. We treat it as "Read-Only." We check this DB to see if a student exists, but we never save data to it.
+
+-----------------------------------------------------------
+Part 3: Step-by-Step Setup Guide
+Follow these steps exactly to wake up the application.
+
+1. Create the Database Containers
+Open your MySQL terminal (or Workbench) and run these two commands to create the empty shells:
+
+SQL
+
+CREATE DATABASE temporary_pass_db;
+CREATE DATABASE university_external_db;
+2. Feed the "Old Brain" (Import Legacy Data)
+We need to populate the university database with the dummy students and lecturers provided in the project.
+
+Bash
+
+# Run from the project root
+mysql -u root -p university_external_db < "Dummy School AMS database/dummyAMS.sql"
+Note: This creates the students and lecturers tables and the view v_university_members used for login.
+
+3. Configure the Environment
+Duplicate the example file and open it for editing.
+
+Bash
+
+cp .env.example .env
+Now, edit .env to connect to BOTH databases:
+
+Ini, TOML
+
+# 1. Main Application Connection
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_DATABASE=temporary_pass_db
+DB_USERNAME=root
+DB_PASSWORD=your_password
+
+# 2. External University Connection
+DB_UNIVERSITY_CONNECTION=university
+DB_UNIVERSITY_HOST=127.0.0.1
+DB_UNIVERSITY_DATABASE=university_external_db
+DB_UNIVERSITY_USERNAME=root
+DB_UNIVERSITY_PASSWORD=your_password
+4. Feed the "New Brain" (Migrate & Seed)
+Now we install the application tables and create the default Admin/Security users.
+
+Bash
+
+# Install dependencies
+composer install
+npm install
+
+# Build tables and add default users
+php artisan migrate
+php artisan db:seed
+The seeder will create an Admin user (check AdminSeeder.php for credentials) and Security Staff users.
+
+5. Launch 🚀
+You can start everything (Server, Queue, Vite) with one command:
+
+Bash
+
+composer run dev
+This leverages the script defined in composer.json to run php artisan serve, queue:listen, and npm run dev concurrently.
