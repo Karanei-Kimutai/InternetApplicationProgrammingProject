@@ -77,11 +77,7 @@
                 <p class="mt-2 text-3xl font-semibold text-slate-900">{{ $statistics['archived_count'] ?? 0 }}</p>
                 <p class="text-xs text-slate-500 mt-1">soft-deleted records</p>
             </article>
-            <article class="rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-500 p-5 text-white shadow-lg">
-                <p class="text-xs uppercase tracking-wide text-white/70">Today’s focus</p>
-                <p class="mt-2 text-lg font-semibold">Resolve all pending requests</p>
-                <p class="text-xs text-indigo-100 mt-2">Aim for sub 10-minute response times.</p>
-            </article>
+            
         </section>
 
         <section class="grid gap-6 lg:grid-cols-3">
@@ -206,14 +202,6 @@
                     </ul>
                 </div>
 
-                <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
-                    <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Admin notes</p>
-                    <ul class="mt-3 list-disc list-inside space-y-2 text-sm text-slate-600">
-                        <li>Clear pending approvals before end of day to avoid gate delays.</li>
-                        <li>Use the rate-limit reset tool sparingly and always log manual overrides.</li>
-                        <li>Monitor email logs for any failed deliveries and resubmit if needed.</li>
-                    </ul>
-                </div>
 
                 <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
                     <div class="flex items-center justify-between">
