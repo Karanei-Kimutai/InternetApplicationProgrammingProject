@@ -36,10 +36,6 @@
                 <input type="password" id="password" name="password" required
                        class="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50">
             </div>
-            <label for="remember" class="flex items-center gap-2 text-sm text-slate-600">
-                <input type="checkbox" id="remember" name="remember" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
-                Remember this device
-            </label>
             <button type="submit"
                     class="w-full rounded-xl bg-blue-600 px-4 py-3 text-white font-semibold shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 Sign In
