@@ -48,7 +48,9 @@
     <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b">
         <div class="mx-auto max-w-7xl px-4 py-4 flex items-center gap-4">
             <div class="flex items-center gap-3">
-                <img src="{{ asset('images/strathmore_logo.png') }}" alt="University Logo" class="h-9 w-auto object-contain" />
+                <a href="{{ route('publicSite.show') }}">
+                    <img src="{{ asset('images/strathmore_logo.png') }}" alt="University Logo" class="h-9 w-auto object-contain" />
+                </a>
                 
                 <!-- Integrated search bar -->
                 <form action="#" method="get" class="hidden md:flex items-stretch gap-2 ms-8">

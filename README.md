@@ -17,6 +17,36 @@ QR Code Integration: Automatic generation of secure QR codes for approved passes
 
 Email Notifications: Automated emails for application receipts, approvals, and rejections.
 
+
+# Pass Approval Workflows
+
+The system implements distinct workflows for different user types to balance security and convenience:
+
+1. University Members (Automated)
+
+Submission: Members log in via AMS credentials and submit a request (e.g., for a lost ID card).
+
+Validation: The system performs an automatic check for abuse (e.g., preventing a member from requesting a "Lost ID" pass more than once within 30 days).
+
+Outcome:
+
+Success: If the request meets criteria, the pass is automatically approved instantly. A QR code is generated and emailed to the member immediately.
+
+Rate Limited: If the member has exceeded the request limit for specific reasons, the system auto-rejects the request and instructs them to visit the security office physically for manual processing.
+
+2. Guests (Manual)
+
+Submission: Visitors apply via the public portal, providing their details, reason for visit, and a profile photo.
+
+Queue: The request enters a Pending state and is queued on the Admin Dashboard.
+
+Review: An administrator reviews the application details and reason.
+
+Outcome:
+
+Approval: When an admin clicks approve, the system generates a QR code (valid for a specific window) and emails it to the guest.
+
+Rejection: If rejected, an email notification is sent to the guest explaining the outcome.
 ## Prerequisites
 
 - PHP 8.2+ with required extensions (`openssl`, `pdo_mysql`, `mbstring`, `bcmath`, `curl`, `intl`, `zip`)

@@ -25,7 +25,7 @@
     <header class="bg-red-600 shadow sticky top-0 z-50">
         <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
             <div>
-                <a href="/">
+                <a href="{{ route('publicSite.show') }}">
                     <img src="{{ asset('images/strathmore_logo.png') }}" alt="Strathmore University Logo" class="h-10">
                 </a>
             </div>
