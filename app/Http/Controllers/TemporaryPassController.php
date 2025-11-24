@@ -92,7 +92,15 @@ class TemporaryPassController extends Controller
             return Redirect::route('adminDashboard')->with('error', 'Pass is already active.');
         }
 
+        // Bring back the pass as pending to ensure a fresh review
         $pass->restore();
+        $pass->update([
+            'status' => 'pending',
+            'valid_from' => null,
+            'valid_until' => null,
+            'approved_by' => null,
+            'qr_code_token' => null,
+        ]);
 
         return Redirect::route('adminDashboard')->with('success', 'Pass restored successfully.');
     }
