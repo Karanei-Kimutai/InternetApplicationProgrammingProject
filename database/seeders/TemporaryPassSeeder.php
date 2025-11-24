@@ -44,12 +44,12 @@ class TemporaryPassSeeder extends Seeder
             ],
             [
                 'guest_email' => 'daniel.mwangi@example.com',
-                'status' => 'approved',
+                'status' => 'pending',
                 'reason' => 'Meeting with the admissions office',
                 'qr_code_token' => 'PASS-GUEST-ADMISSIONS-20241025',
                 'valid_from' => now()->subHours(2),
                 'valid_until' => now()->addHours(4),
-                'approved_by' => $admin->id,
+                'approved_by' => null,
             ],
             [
                 'guest_email' => 'brenda.kiplagat@example.com',
