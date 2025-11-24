@@ -16,6 +16,7 @@
     </script>
     <meta name="robots" content="noindex">
     <meta name="description" content="Confirmation that your application has been received and is being processed.">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/tp-logo.svg') }}">
 </head>
 <body class="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 font-sans antialiased py-12 px-4">
 @php
@@ -31,10 +32,13 @@
         <div class="rounded-[32px] bg-white shadow-2xl ring-1 ring-black/5 overflow-hidden">
             <header class="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-600 px-10 py-8 text-white">
                 <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div>
-                        <p class="text-xs uppercase tracking-[0.3em] text-blue-200">Temporary Pass Confirmation</p>
-                        <h1 class="mt-2 text-3xl font-semibold">You're all set.</h1>
-                        <p class="mt-2 text-sm text-blue-100 max-w-2xl">{{ $statusMessage }}</p>
+                    <div class="flex items-start gap-3">
+                        <img src="{{ asset('images/tp-logo.svg') }}" alt="Temporary Pass logo" class="h-12 w-auto hidden sm:block drop-shadow">
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.3em] text-blue-200">Temporary Pass Confirmation</p>
+                            <h1 class="mt-2 text-3xl font-semibold">You're all set.</h1>
+                            <p class="mt-2 text-sm text-blue-100 max-w-2xl">{{ $statusMessage }}</p>
+                        </div>
                     </div>
                     <div class="bg-white/10 rounded-2xl px-6 py-4 backdrop-blur text-sm">
                         <p class="text-blue-100">QR + instructions sent to</p>

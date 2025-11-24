@@ -114,6 +114,9 @@ Route::get('/visit', function () {
 //Route to handle the Visit Us form submission
 Route::post('/visit', [GuestTemporaryPassController::class, 'store'])->name('visit.submit');
 
+// Help & FAQ
+Route::view('/help', 'help')->name('help.show');
+
 
 // Guest pass now uses the public "Visit Us" page
 Route::get('/guest-form', function () {

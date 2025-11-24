@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/tp-logo.svg') }}">
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Configure Tailwind to use Inter font -->
@@ -29,13 +30,14 @@
             <div class="bg-white max-w-md w-full p-8 sm:p-10 rounded-xl shadow-lg">
                 
                 <!-- Header -->
-                <div>
-                    <!-- Admin-specific icon or logo -->
-                    <!-- <img class="mx-auto h-12 w-auto" src="https://placehold.co/100x100/ef4444/ffffff?text=ADMIN" alt="Admin Lock"> -->
-                    <h2 class="mt-6 text-center text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">
+                <div class="space-y-3 text-center">
+                    <div class="flex justify-center">
+                        <img src="{{ asset('images/tp-logo.svg') }}" alt="Temporary Pass logo" class="h-14 w-auto">
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">
                         Admin Login
                     </h2>
-                    <p class="mt-2 text-center text-sm text-gray-600">
+                    <p class="text-sm text-gray-600">
                         Authorized Personnel Only
                     </p>
                 </div>
@@ -93,4 +95,3 @@
 
 </body>
 </html>
-

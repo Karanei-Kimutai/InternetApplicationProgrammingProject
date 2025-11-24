@@ -4,16 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Security Verification</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/tp-logo.svg') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <meta name="robots" content="noindex">
 </head>
 <body class="min-h-screen bg-slate-900 text-white">
     <div class="max-w-5xl mx-auto py-10 px-4 space-y-6">
         <header class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-                <p class="text-xs uppercase tracking-[0.4em] text-blue-300">Security Portal</p>
-                <h1 class="text-3xl font-semibold">Scan or enter a QR token</h1>
-                <p class="text-sm text-slate-300 mt-2">Paste the token shown in the QR payload. We’ll display the pass status instantly.</p>
+            <div class="flex items-start gap-3">
+                <img src="{{ asset('images/tp-logo.svg') }}" alt="Temporary Pass logo" class="h-12 w-auto hidden sm:block">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.4em] text-blue-300">Security Portal</p>
+                    <h1 class="text-3xl font-semibold">Scan or enter a QR token</h1>
+                    <p class="text-sm text-slate-300 mt-2">Paste the token shown in the QR payload. We’ll display the pass status instantly.</p>
+                </div>
             </div>
             <form action="{{ route('security.logout') }}" method="POST">
                 @csrf

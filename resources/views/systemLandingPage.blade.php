@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Strathmore Temporary Pass Application</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/tp-logo.svg') }}">
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -40,6 +41,7 @@
     <nav class="w-full max-w-7xl px-4 py-3 bg-white dark:bg-gray-800 shadow-xl rounded-xl flex items-center mx-auto mb-10 border border-gray-200 dark:border-gray-700 sticky top-4 z-10">
         <!-- Generic Brand (no institution-specific content) -->
         <div class="flex items-center gap-3">
+            <img src="{{ asset('images/tp-logo.svg') }}" alt="Temporary Pass logo" class="h-10 w-auto">
             <span class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Temporary Pass Portal</span>
         </div>
         <!-- Nav links -->
@@ -47,6 +49,7 @@
             <a href="{{ route('publicSite.show') }}" class="text-gray-700 dark:text-gray-300 hover:text-brand-blue dark:hover:text-blue-400 font-medium">Home</a>
             <a href="{{ route('visit.show') }}" class="text-gray-700 dark:text-gray-300 hover:text-brand-blue dark:hover:text-blue-400 font-medium">Visitor Access</a>
             <a href="{{ route('universityMemberLogin') }}" class="text-gray-700 dark:text-gray-300 hover:text-brand-blue dark:hover:text-blue-400 font-medium">Member Login</a>
+            <a href="{{ route('help.show') }}" class="text-gray-700 dark:text-gray-300 hover:text-brand-blue dark:hover:text-blue-400 font-medium">Help & FAQ</a>
             <button title="Toggle theme" onclick="document.documentElement.classList.toggle('dark')" class="p-2 rounded-full text-gray-800 dark:text-white bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 shadow-sm transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
             </button>

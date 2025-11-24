@@ -76,6 +76,24 @@ class AdminController extends Controller
             'archived_count' => TemporaryPass::onlyTrashed()->count(),
         ];
 
+        $statusBreakdown = TemporaryPass::selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
+        $typeBreakdown = TemporaryPass::selectRaw('passable_type, COUNT(*) as total')
+            ->groupBy('passable_type')
+            ->pluck('total', 'passable_type');
+
+        $dailyTotals = TemporaryPass::selectRaw('DATE(created_at) as day, COUNT(*) as total')
+            ->where('created_at', '>=', now()->subDays(6)->startOfDay())
+            ->groupBy('day')
+            ->orderBy('day')
+            ->get()
+            ->map(fn ($row) => [
+                'day' => $row->day,
+                'total' => (int) $row->total,
+            ]);
+
         $archivedPasses = TemporaryPass::onlyTrashed()
             ->with('passable')
             ->latest()
@@ -86,7 +104,10 @@ class AdminController extends Controller
             'universityApplications',
             'guestApplications',
             'statistics',
-            'archivedPasses'
+            'archivedPasses',
+            'statusBreakdown',
+            'typeBreakdown',
+            'dailyTotals',
         ));
     }
 
