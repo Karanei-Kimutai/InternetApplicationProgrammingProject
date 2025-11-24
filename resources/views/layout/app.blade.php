@@ -4,7 +4,7 @@
     <meta charset="UTF-8"> <!-- fixed typo: UTF-g → UTF-8 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Temporary Pass System</title>
-
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/tp-logo.svg') }}">
     
     <script src="https://cdn.tailwindcss.com"></script>
 </head>

@@ -8,8 +8,8 @@
 
     <!-- Header -->
     <div class="px-8 pt-8 pb-4 flex items-start gap-4">
-      <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center ring-1 ring-blue-200">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6 text-blue-700"><path d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Z"/><path fill-rule="evenodd" d="M8.25 9a.75.75 0 0 1 .75-.75h6a.75.75 0 0 1 .75.75v6a.75.75 0 0 1-.75.75h-6a.75.75 0 0 1-.75-.75V9Zm1.5.75v4.5h4.5v-4.5h-4.5Z" clip-rule="evenodd"/></svg>
+      <div class="h-12 w-10 flex items-center justify-center">
+        <img src="{{ asset('images/tp-logo.svg') }}" alt="Temporary Pass logo" class="h-12 w-auto">
       </div>
       <div>
         <h1 class="text-2xl font-bold text-gray-900">Temporary Pass Application</h1>

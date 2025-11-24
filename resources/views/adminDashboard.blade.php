@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Security Control Center</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/tp-logo.svg') }}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script>
         tailwind.config = {
@@ -20,7 +22,8 @@
 <div x-data="{ queueTab: 'members' }" class="min-h-screen">
     <header class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
+            <div class="flex items-center gap-4">
+                <img src="{{ asset('images/tp-logo.svg') }}" alt="Temporary Pass logo" class="h-12 w-auto hidden sm:block">
                 <p class="text-xs uppercase tracking-[0.4em] text-blue-600">Admin Command Center</p>
                 <h1 class="text-2xl font-semibold text-slate-900">Temporary Pass Operations</h1>
                 <p class="text-sm text-slate-500 mt-1">Monitor queues, manage approvals, and unblock members.</p>
@@ -53,6 +56,29 @@
                 {{ session('error') }}
             </div>
         @endif
+
+        <section class="grid gap-6 lg:grid-cols-3">
+            <div class="rounded-3xl bg-white border border-slate-200 shadow-sm p-6 lg:col-span-2">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.3em] text-blue-500">Activity</p>
+                        <h2 class="text-xl font-semibold text-slate-900">Submissions (last 7 days)</h2>
+                    </div>
+                    <span class="text-xs text-slate-500">Members + guests</span>
+                </div>
+                <div class="mt-4">
+                    <canvas id="dailyVolumeChart" height="120"></canvas>
+                </div>
+            </div>
+            <div class="rounded-3xl bg-white border border-slate-200 shadow-sm p-6">
+                <p class="text-xs uppercase tracking-[0.3em] text-blue-500">Status</p>
+                <h2 class="text-lg font-semibold text-slate-900">Current breakdown</h2>
+                <div class="mt-4">
+                    <canvas id="statusChart" height="180"></canvas>
+                </div>
+                <div class="mt-4 text-xs text-slate-500">All temporary passes.</div>
+            </div>
+        </section>
 
         <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <article class="rounded-3xl bg-white border border-slate-200 p-5 shadow-sm">
@@ -250,6 +276,72 @@
             </div>
         </section>
     </main>
+    <script>
+        const dailyTotals = @json($dailyTotals);
+        const statusBreakdown = @json($statusBreakdown);
+
+        const dailyCtx = document.getElementById('dailyVolumeChart');
+        if (dailyCtx) {
+            const labels = dailyTotals.length
+                ? dailyTotals.map(item => new Date(item.day).toLocaleDateString())
+                : ['No data'];
+            const dataPoints = dailyTotals.length ? dailyTotals.map(item => item.total) : [0];
+
+            new Chart(dailyCtx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Submissions',
+                        data: dataPoints,
+                        tension: 0.35,
+                        fill: true,
+                        backgroundColor: 'rgba(10, 58, 140, 0.12)',
+                        borderColor: '#0a3a8c',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#0a3a8c',
+                        pointBorderColor: '#fff',
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        const statusCtx = document.getElementById('statusChart');
+        if (statusCtx) {
+            const statusLabels = Object.keys(statusBreakdown ?? {});
+            const statusData = Object.values(statusBreakdown ?? {});
+
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: statusLabels.length ? statusLabels : ['No data'],
+                    datasets: [{
+                        data: statusData.length ? statusData : [1],
+                        backgroundColor: ['#0a3a8c', '#22c55e', '#f97316', '#ef4444', '#94a3b8'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+    </script>
 </div>
 </body>
 </html>
