@@ -24,9 +24,7 @@ class SecurityAuthController extends Controller
             'password' => ['required','string'],
         ]);
 
-        $remember = $request->boolean('remember');
-
-        if (Auth::guard('security')->attempt($credentials, $remember)) {
+        if (Auth::guard('security')->attempt($credentials, false)) {
             $request->session()->regenerate();
 
             /** @var SecurityStaff $staff */
