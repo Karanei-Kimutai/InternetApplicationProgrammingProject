@@ -109,19 +109,31 @@ php artisan key:generate
 Edit `.env` (copied from `.env.example`) and set the following keys:
 
 - `DB_*` – primary application database credentials.
-- `DB_UNIVERSITY_*` – connection details for the external University AMS database. A sample dump lives in `Dummy School AMS database/dummyAMS.sql`; import it into a separate schema and point these variables to it.
+- `DB_UNIVERSITY_*` – connection details for the external University AMS database. Set `DB_UNIVERSITY_DATABASE=university_external_db` (or your chosen schema name). You do NOT need to import the SQL dump manually; instead, use the provided migrations and seeders (see below). The sample dump in `Dummy School AMS database/dummyAMS.sql` is for reference only.
 - `MAIL_*` or the dedicated `PHPMAILER_*` block if you plan on sending real emails (defaults log mail locally).
 
 
 ## Database Setup
 
+
+### Main Application Database
 ```bash
-# Create both databases manually, then run:
+# Create the main application database manually, then run:
 php artisan migrate
-php artisan db:seed    
+php artisan db:seed
 ```
 
-If you prefer a one-liner, `composer run setup` covers install, key generation, migrations, npm install, and a production asset build (supply a `.env` beforehand).
+### External University Database
+```bash
+# Only the students, lecturers, and v_university_members view should exist in the external database.
+# Use the dedicated migrations and seeders:
+php artisan migrate:fresh --database=university --path=database/university_migrations
+php artisan db:seed --class=StudentsTableSeeder --database=university
+php artisan db:seed --class=LecturersTableSeeder --database=university
+```
+This ensures only the required tables and view are present in `university_external_db`.
+
+If you prefer a one-liner, `composer run setup` covers install, key generation, migrations, npm install, and a production asset build (supply a `.env` beforehand). Note: This will run all migrations on the default connection; for the external database, always use the commands above.
 
 ## Running the App
 
@@ -134,4 +146,4 @@ Build production assets via `npm run build`. For a clean slate, clear caches wit
 
 - **Missing APP_KEY:** rerun `php artisan key:generate`.
 - **403/419 errors:** ensure `SESSION_DRIVER=database` tables exist (`php artisan session:table && php artisan migrate`).
-- **External AMS connection issues:** verify the secondary DB credentials and that the dump from `Dummy School AMS database/dummyAMS.sql` was imported.
+- **External AMS connection issues:** verify the secondary DB credentials and that the correct migrations and seeders have been run for the external database (see above). You do not need to import the SQL dump manually.
